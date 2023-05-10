@@ -1,8 +1,10 @@
 <template>
-    <HomeHeader />
-    <div class="space"></div>
-    <slot />
-    <MainFooter />
+    <div>
+        <HomeHeader />
+        <div class="space"></div>
+        <slot />
+        <MainFooter />
+    </div>
 </template>
 
 <script setup>
