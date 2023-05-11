@@ -41,8 +41,9 @@
 </template>
 
 <script setup>
-import { collection, getDocs, getFirestore, onSnapshot } from 'firebase/firestore';
 import AddBoardModal from '~~/components/AddBoardModal.vue';
+import { useBoards } from '~~/store/useBoard'
+
 definePageMeta({
     layout: 'main',
     middleware: 'auth',
@@ -53,18 +54,16 @@ const addBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
 
-const db = getFirestore();
-const dbCollection = collection(db, 'dashboard');
-const response = await getDocs(dbCollection);
-boards.value = response.docs.map((doc) => {
-    return { ...doc.data(), id: doc.id };
-});
+const { boardStore } = await useBoards();
 
-onSnapshot(dbCollection, (snap) => {
-    boards.value = snap.docs.map((doc) => {
-        return { ...doc.data(), id: doc.id };
-    });
-});
+boards.value = boardStore.value;
+
+watch(boardStore, async () => {
+    const { boardStore } = await useBoards();
+
+    boards.value = boardStore.value;
+})
+
 
 function handelStatus (event) {
     if (event) {

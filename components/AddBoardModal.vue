@@ -39,7 +39,6 @@
 import { useCollection, useStorage } from '~~/composable/useFirebase';
 import { useUser } from '~~/composable/useFirebase'
 
-
 const emit = defineEmits(['closeAddBoard', 'status']);
 const rules = [(value) => !!value || "Required!!!"]
 const form = ref(null);
@@ -79,7 +78,7 @@ async function addBoard () {
     const createdAt = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
     const board = {
         backgroundColor: backgroundColor.value,
-        boardId: user.value.uid,
+        userId: user.value.uid,
         img: boardImgUrl.value,
         title: boardTitle.value,
         createdAt: createdAt
