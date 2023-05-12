@@ -1,7 +1,7 @@
 <template>
-    <v-container class="board-wrapper overflow-y-auto" id="scroll-target">
+    <v-container class="board-wrapper overflow-y-auto">
         <v-row>
-            <v-col cols="3" xs="12" sm="6" md="4" lg="3" v-for="board in boards" :key="board.id" class="card">
+            <v-col cols="12" sm="6" md="4" lg="3" xl="3" xxl="2" v-for="board in boards" :key="board.id" class="card">
                 <NuxtLink :to="`/dashboard/${board.id}`" class="text-decoration-none">
                     <v-card class="ml-3 rounded-lg text-white"
                         :style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img}');background-size: cover;background-position: center;`">
@@ -10,7 +10,7 @@
                     </v-card>
                 </NuxtLink>
             </v-col>
-            <v-col cols="3" xs="12" sm="6" md="4" lg="3" class="card">
+            <v-col cols="12" sm="6" md="4" lg="3" xl="3" xxl="2" class="card">
                 <v-card class="ml-3 d-flex justify-center align-center" @click="addBoard = true">
                     <p class="">Tạo bảng mới</p>
                 </v-card>
@@ -110,9 +110,5 @@ function handelStatus (event) {
     &>.v-card {
         background-color: #ebebeb;
     }
-}
-
-.router-link {
-    text-transform: none;
 }
 </style>
