@@ -13,7 +13,13 @@ import {
   getStorage,
 } from "firebase/storage";
 
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 const error = ref(null);
 
@@ -110,7 +116,6 @@ export const useCollection = (name) => {
   const response = ref(null);
   async function addRecord(record) {
     error.value = null;
-
     try {
       response.value = await addDoc(collection(db, name), record);
       return response;
@@ -118,6 +123,17 @@ export const useCollection = (name) => {
       error.value = err.message;
     }
   }
-
   return { error, addRecord };
+};
+
+export const useDelete = async (name, id) => {
+  const error = ref(null);
+  const db = getFirestore();
+  const dbDoc = doc(db, name, id);
+  try {
+    const response = await deleteDoc(dbDoc);
+  } catch (err) {
+    error.value = err.message;
+  }
+  return { error };
 };

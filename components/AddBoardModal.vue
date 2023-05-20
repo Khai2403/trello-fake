@@ -79,7 +79,7 @@ async function addBoard () {
     const board = {
         backgroundColor: backgroundColor.value,
         userId: user.value.uid,
-        img: boardImgUrl.value,
+        img: boardImgUrl.value ? boardImgUrl.value : '',
         title: boardTitle.value,
         createdAt: createdAt
     }

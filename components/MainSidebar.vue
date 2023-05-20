@@ -1,5 +1,6 @@
 <template>
-    <div class="dashboard">
+    <div class="dashboard"
+        :style="`color: ${isDetail ? 'white' : 'black'};background-color:${isDetail ? 'rgba(0, 0, 0, 0.6)' : 'white'};`">
         <v-row class="dashboard__title" no-gutters>
             <v-col cols="2" class="dashboard__title__logo">
                 <div class="w-100">
@@ -9,7 +10,7 @@
                 </div>
             </v-col>
             <v-col cols="8" class="ml-2">
-                <nuxt-link to="/dashboard" class="text-decoration-none text-black">
+                <nuxt-link to="/dashboard" class="text-decoration-none" :style="`color: ${isDetail ? 'white' : 'black'};`">
                     <div class="font-weight-bold text-subtitle-1">
                         Trello Không gian làm việc
                     </div>
@@ -33,14 +34,24 @@
                 <v-icon class="add-board" icon="mdi-plus" @click="addBoard = true"></v-icon>
             </div>
             <div class="overflow-y-auto board-group">
-                <v-btn v-for="board in boards" :key="board.id" class="w-100 d-flex justify-start mt-2" variant="text"
-                    :to="`/dashboard/${board.id}`">
-                    <div :style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img}')`"
-                        class="board-img">
-                    </div>
-
-                    {{ board.title }}
-                </v-btn>
+                <template v-for="board in boards" :key="board.id">
+                    <v-hover v-slot="{ isHovering, props }">
+                        <div v-bind="props" class="board d-flex align-center w-100 mt-2">
+                            <v-btn class="board__btn d-flex justify-start align-center" variant="text"
+                                :to="`/dashboard/${board.id}`">
+                                <div class="d-flex align-center board__title">
+                                    <div :style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img ? board?.img : ''}')`"
+                                        class="board__img">
+                                    </div>
+                                    {{ board?.title }}
+                                </div>
+                            </v-btn>
+                            <div v-if="isHovering" class="delete__board__btn d-flex align-center justify-center">
+                                <v-icon icon="mdi-delete" @click.prevent="deleteBoard(board.id)"></v-icon>
+                            </div>
+                        </div>
+                    </v-hover>
+                </template>
             </div>
             <v-dialog v-model="addBoard" :max-width="450" class="rounded-lg" persistent>
                 <add-board-modal @close-add-board="addBoard = false" @status="handelStatus" />
@@ -64,18 +75,26 @@
                 </v-btn>
             </template>
         </v-snackbar>
+        <v-dialog v-model="loadingProgress" persistent :max-width="200" class="d-flex align-center justify-center">
+            <div class="d-flex justify-center align-center">
+                <v-progress-circular color="success" :size="60" indeterminate></v-progress-circular>
+            </div>
+        </v-dialog>
     </div>
 </template>
 
 <script setup>
 import AddBoardModal from './AddBoardModal.vue';
-import { useBoards } from '~~/store/useBoard'
+import { useBoards } from '~~/store/useBoard';
+import { useDelete } from '~~/composable/useFirebase';
 
+const { isDetail } = defineProps(['isDetail']);
 const emit = defineEmits(['hideSidebar'])
 const boards = ref([]);
 const addBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
+const loadingProgress = ref(false);
 
 const { boardStore } = await useBoards();
 
@@ -85,12 +104,11 @@ watch(boardStore, async () => {
     const { boardStore } = await useBoards();
 
     boards.value = boardStore.value;
-})
-
+});
 
 function hideSidebar () {
     emit('hideSidebar');
-}
+};
 
 function handelStatus (event) {
     if (event) {
@@ -99,11 +117,22 @@ function handelStatus (event) {
         isFalse.value = true;
     }
 };
+async function deleteBoard (deleteBoardId) {
+    loadingProgress.value = true;
+    const { error } = await useDelete("dashboard", deleteBoardId);
+    if (!error.value) {
+        isSuccess.value = true;
+    } else {
+        isFalse.value = true;
+    }
+    loadingProgress.value = false;
+};
 </script>
 
 <style lang="scss" scoped>
 .dashboard {
     min-width: 300px;
+    max-width: 300px;
 
     .dashboard__title {
         display: flex;
@@ -129,22 +158,45 @@ function handelStatus (event) {
     }
 
     .add-board:hover {
-        background-color: #ccc;
+        background-color: rgba($color: #ccc, $alpha: 0.6);
         cursor: pointer;
         border-radius: 4px;
     }
 
-    .board-img {
-        min-height: 20px;
-        min-width: 24px;
-        background-size: cover;
-        margin-right: 8px;
-        border-radius: 4px;
-    }
 
     .board-group {
         max-height: 410px;
 
+        .board:hover {
+            background-color: rgba($color: #ccc, $alpha: 0.2);
+            border-radius: 4px;
+        }
+
+        .board__img {
+            min-height: 20px;
+            min-width: 24px;
+            background-size: cover;
+            margin-right: 8px;
+            border-radius: 4px;
+        }
+
+        .delete__board__btn {
+            flex: 1;
+
+            .v-icon:hover {
+                cursor: pointer;
+                background-color: rgba($color: #ccc, $alpha: 0.6);
+                border-radius: 4px;
+            }
+        }
+
+        .board__btn {
+            width: 85%;
+
+            &:hover {
+                background-color: rgba($color: #ccc, $alpha: 0.2);
+            }
+        }
     }
 
     ::-webkit-scrollbar {
@@ -155,7 +207,6 @@ function handelStatus (event) {
     ::-webkit-scrollbar-track {
         background-color: #eee;
         border-radius: 10px;
-
     }
 
     ::-webkit-scrollbar-thumb {
