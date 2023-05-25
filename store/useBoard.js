@@ -7,6 +7,7 @@ import {
   query,
   orderBy,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { useUser } from "~~/composable/useFirebase";
 
@@ -68,7 +69,54 @@ export const useWorkList = async (boardId) => {
     work.value = workListStore.value.find((work) => work.id === workId);
     return { work };
   }
-  return { workListStore, workDetail };
+
+  async function updateWorkRank(oldIndex, newIndex) {
+    const error = ref(null);
+    const dbDoc = ref(null);
+    const db = getFirestore();
+    if (oldIndex < newIndex) {
+      const works = workListStore.value.filter((work) => {
+        return work.rank >= oldIndex + 1 && work.rank <= newIndex + 1;
+      });
+      works.sort((a, b) => a.rank - b.rank);
+      dbDoc.value = doc(db, "work-list", works[0].id);
+      await updateDoc(dbDoc.value, "rank", newIndex + 1);
+      for (let i = 1; i < works.length; i++) {
+        dbDoc.value = doc(db, "work-list", works[i].id);
+        try {
+          const response = await updateDoc(
+            dbDoc.value,
+            "rank",
+            works[i].rank - 1
+          );
+        } catch (err) {
+          error.value = err.message;
+        }
+      }
+    } else {
+      const works = workListStore.value.filter((work) => {
+        return work.rank >= newIndex + 1 && work.rank <= oldIndex + 1;
+      });
+      const tmp = oldIndex - newIndex;
+      works.sort((a, b) => a.rank - b.rank);
+      dbDoc.value = doc(db, "work-list", works[tmp].id);
+      await updateDoc(dbDoc.value, "rank", newIndex + 1);
+      for (let i = 0; i < oldIndex - newIndex; i++) {
+        dbDoc.value = doc(db, "work-list", works[i].id);
+        try {
+          const response = await updateDoc(
+            dbDoc.value,
+            "rank",
+            works[i].rank + 1
+          );
+        } catch (err) {
+          error.value = err.message;
+        }
+      }
+    }
+    return { error };
+  }
+  return { workListStore, workDetail, updateWorkRank };
 };
 
 export const updateCard = async (workId, cards) => {
@@ -94,7 +142,3 @@ export const editWorkTitle = async (workId, workTitle) => {
   }
   return { error };
 };
-
-// const { workDetail } = await useWorkList("BohS2CezHdKTVplYt6Jb");
-// const { work } = workDetail("OlxjTLs6cK1Hghl80Ux7");
-// console.log(work.value);

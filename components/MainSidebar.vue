@@ -34,7 +34,7 @@
                 <v-icon class="add-board" icon="mdi-plus" @click="addBoard = true"></v-icon>
             </div>
             <div class="overflow-y-auto board-group">
-                <template v-for="board in boards" :key="board.id">
+                <div v-for="board in boards" :key="board.id">
                     <v-hover v-slot="{ isHovering, props }">
                         <div v-bind="props" class="board d-flex align-center w-100 mt-2">
                             <v-btn class="board__btn d-flex justify-start align-center" variant="text"
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                     </v-hover>
-                </template>
+                </div>
             </div>
             <v-dialog v-model="addBoard" :max-width="450" class="rounded-lg" persistent>
                 <add-board-modal @close-add-board="addBoard = false" @status="handelStatus" />
@@ -88,7 +88,7 @@ import AddBoardModal from './AddBoardModal.vue';
 import { useBoards } from '~~/store/useBoard';
 import { useDelete } from '~~/composable/useFirebase';
 
-const { isDetail } = defineProps(['isDetail']);
+const { isDetail, activeWorkId } = defineProps(['isDetail', 'activeWorkId']);
 const emit = defineEmits(['hideSidebar'])
 const boards = ref([]);
 const addBoard = ref(false);
@@ -120,6 +120,9 @@ function handelStatus (event) {
 async function deleteBoard (deleteBoardId) {
     loadingProgress.value = true;
     const { error } = await useDelete("dashboard", deleteBoardId);
+    if (activeWorkId == deleteBoardId) {
+        navigateTo('/dashboard');
+    }
     if (!error.value) {
         isSuccess.value = true;
     } else {

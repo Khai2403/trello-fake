@@ -2,7 +2,8 @@
     <div class="dashboard-wrapper"
         :style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`">
         <v-fade-transition v-if="!hideSidebar">
-            <MainSidebar v-show="!hideSidebar" @hide-sidebar="handelHideSidebar" :is-detail="isDetail" />
+            <MainSidebar v-show="!hideSidebar" @hide-sidebar="handelHideSidebar" :is-detail="isDetail"
+                :active-work-id="id" />
         </v-fade-transition>
         <div v-if="hideSidebar" class="d-flex flex-column mr-3">
             <div class="sidebar" @click="hideSidebar = false">
@@ -11,88 +12,99 @@
                 </div>
             </div>
         </div>
-        <v-divider :thickness="2" vertical v-if="!hideSidebar"></v-divider>
-        <div class="work-list">
-            <v-card :draggable="true" v-for="(work, index) in workList" :key="work.id" class="work mr-5 rounded-lg">
-                <v-hover v-slot="{ isHovering, props }">
-                    <label v-bind="props" :for="work.id" class="workTitleWrapper d-flex">
-                        <input type="text" :id="work.id" class="workTitle" :value="work.title"
-                            @change="onChangeTitle(work.id, $event)">
-                        <div v-if="isHovering" class="ml-2 mr-2 delete-btn d-flex align-center justify-center"
-                            @click.prevent="deleteBoard(work.id)">
-                            <v-icon icon="mdi-window-close"></v-icon>
-                        </div>
-                    </label>
-                </v-hover>
-                <v-divider :thickness="1"></v-divider>
-                <div class="overflow-y-auto">
-                    <template v-for="(card, i) in work.cards" :key="i">
-                        <v-hover v-slot="{ isHovering, props }">
-                            <v-card v-bind="props" :draggable="true" variant="text" class="d-flex align-center pa-2">
-                                <v-expansion-panels v-model="panels">
-                                    <v-expansion-panel :value="cardTitleEdit[index][i].panelValue">
-                                        <v-expansion-panel-title @click="showEditCardTitle(index, i)">
-                                            <template v-slot:actions="{ expanded }">
-                                                <v-icon :color="!expanded ? 'teal' : ''"
-                                                    :icon="expanded ? 'mdi-pencil' : 'mdi-chevron-down'"></v-icon>
-                                            </template>
-                                            <div class="text-subtitle-1">{{ card }}</div>
-                                        </v-expansion-panel-title>
-                                        <v-expansion-panel-text>
-                                            <v-form v-model="formEditTitleCard"
-                                                @submit.prevent="editTitleCard(work.id, index, i)">
-                                                <v-text-field v-model="cardTitleEdit[index][i].title" label="Tiêu đề"
-                                                    :rules="rules"></v-text-field>
-                                                <v-spacer></v-spacer>
-                                                <div class="d-flex justify-end">
-                                                    <v-btn :disabled="!formEditTitleCard" color="success" class="mr-3"
-                                                        width="100" type="submit">Chỉnh
-                                                        sửa</v-btn>
-                                                    <v-btn color="error" width="60"
-                                                        @click="deleteCard(work.id, i)">Xóa</v-btn>
-                                                </div>
-                                            </v-form>
-                                        </v-expansion-panel-text>
-                                    </v-expansion-panel>
-                                </v-expansion-panels>
-                                <v-divider color="rgba(0,0,0,1)" v-if="isHovering" :thickness="2" vertical></v-divider>
-                                <div>
-                                    <div v-if="isHovering && !cardTitleEdit[index][i]?.isEdit" class="ml-2 delete-btn"
-                                        @click="deleteCard(work.id, i)">
-                                        <v-icon icon="mdi-delete"></v-icon>
-                                    </div>
-                                </div>
-                            </v-card>
-                            <v-divider :thickness="1"></v-divider>
-                        </v-hover>
-                    </template>
-                </div>
-                <div class="d-flex justify-center mt-1 mb-2">
-                    <v-btn class="d-flex algin-center justify-center pa-2 pl-2 rounded-lg" variant="text"
-                        @click="showAddCard(work.id)">
+        <v-divider :thickness="2" vertical v-if="!hideSidebar"
+            :style="`color: ${isDetail ? 'white' : 'black'};`"></v-divider>
+        <div class="d-flex overflow-x-auto overflow-y-hidden">
+            <draggable class="work-list" :list="workList" @change="draggableWork($event)" drag-class="drag"
+                ghost-class="ghostWork" handle=".work">
+                <v-card :draggable="true" v-for="(work, index) in workList" :key="work.id" class="work mr-5 rounded-lg">
+                    <v-hover v-slot="{ isHovering, props }">
+                        <label v-bind="props" :for="work.id" class="workTitleWrapper d-flex">
+                            <input type="text" :id="work.id" class="workTitle" :value="work.title"
+                                @change="onChangeTitle(work.id, $event)">
+                            <div v-if="isHovering" class="ml-2 mr-2 delete-btn d-flex align-center justify-center"
+                                @click.prevent="deleteBoard(work.id)">
+                                <v-icon icon="mdi-window-close"></v-icon>
+                            </div>
+                        </label>
+                    </v-hover>
+                    <v-divider :thickness="1"></v-divider>
+                    <div class="overflow-y-auto">
+                        <draggable :list="work.cards" @change="draggableCard(work.id, $event)" ghost-class="ghost">
+                            <div v-for="(card, i) in work.cards" :key="i">
+                                <v-hover v-slot="{ isHovering, props }">
+                                    <v-card v-bind="props" :draggable="true" variant="text"
+                                        class="d-flex align-center pa-2">
+                                        <v-expansion-panels v-model="panels">
+                                            <v-expansion-panel :value="cardTitleEdit[index][i]?.panelValue">
+                                                <v-expansion-panel-title @click="showEditCardTitle(index, i)">
+                                                    <template v-slot:actions="{ expanded }">
+                                                        <v-icon :color="!expanded ? 'teal' : ''"
+                                                            :icon="expanded ? 'mdi-pencil' : 'mdi-chevron-down'"></v-icon>
+                                                    </template>
+                                                    <div class="text-subtitle-1">{{ card }}</div>
+                                                </v-expansion-panel-title>
+                                                <v-expansion-panel-text>
+                                                    <v-form v-model="formEditTitleCard"
+                                                        @submit.prevent="editTitleCard(work.id, index, i)">
+                                                        <v-text-field v-model="cardTitleEdit[index][i].title"
+                                                            label="Tiêu đề" :rules="rules"></v-text-field>
+                                                        <v-spacer></v-spacer>
+                                                        <div class="d-flex justify-end">
+                                                            <v-btn :disabled="!formEditTitleCard" color="success"
+                                                                class="mr-3" width="100" type="submit">Chỉnh
+                                                                sửa</v-btn>
+                                                            <v-btn color="error" width="60"
+                                                                @click="deleteCard(work.id, i)">Xóa</v-btn>
+                                                        </div>
+                                                    </v-form>
+                                                </v-expansion-panel-text>
+                                            </v-expansion-panel>
+                                        </v-expansion-panels>
+                                        <v-divider color="rgba(0,0,0,1)" v-if="isHovering" :thickness="2"
+                                            vertical></v-divider>
+                                        <div>
+                                            <div v-if="isHovering && !cardTitleEdit[index][i]?.isEdit"
+                                                class="ml-2 delete-btn" @click="deleteCard(work.id, i)">
+                                                <v-icon icon="mdi-delete"></v-icon>
+                                            </div>
+                                        </div>
+                                    </v-card>
+                                    <v-divider :thickness="1"></v-divider>
+                                </v-hover>
+                            </div>
+                        </draggable>
+                    </div>
+                    <div class="d-flex justify-center mt-1 mb-2">
+                        <v-btn class="d-flex algin-center justify-center pa-2 pl-2 rounded-lg" variant="text"
+                            @click="showAddCard(work.id)">
+                            <v-icon icon="mdi-plus" class="mr-1"></v-icon>
+                            Thêm thẻ
+                        </v-btn>
+                    </div>
+                </v-card>
+            </draggable>
+            <div class="mt-4 mr-5">
+                <div v-if="!isAddWork">
+                    <v-btn class="add-work-btn d-flex align-center rounded-lg pa-6" min-width="300" @click="showAddWork">
                         <v-icon icon="mdi-plus" class="mr-1"></v-icon>
-                        Thêm thẻ
+                        Thêm danh sách khác
                     </v-btn>
                 </div>
-            </v-card>
-            <v-btn v-if="!isAddWork" class="d-flex align-center rounded-lg pa-6" min-width="300" @click="showAddWork">
-                <v-icon icon="mdi-plus" class="mr-1"></v-icon>
-                Thêm danh sách khác
-            </v-btn>
-            <v-form v-model="formAddWork" @submit.prevent="addWork">
-                <v-card v-if="isAddWork" v-click-outside="closeAddWork" class="new-board rounded-lg pa-2 h-auto"
-                    min-width="300">
-                    <v-card-title>Tạo danh sách mới</v-card-title>
-                    <v-card-text>
-                        <v-text-field v-model="newWorktitle" :readonly="loading" :disabled="loading" :rules="rules"
-                            density="comfortable" label="Tiêu đề"></v-text-field>
-                        <div class="float-right mb-1">
-                            <v-btn color="error" class="mr-2" @click="closeAddWork">Đóng</v-btn>
-                            <v-btn :disabled="!formAddWork" :loading="loading" type="submit" color="success">Tạo</v-btn>
-                        </div>
-                    </v-card-text>
-                </v-card>
-            </v-form>
+                <v-form v-if="isAddWork" v-model="formAddWork" @submit.prevent="addWork">
+                    <v-card v-click-outside="closeAddWork" class="new-board rounded-lg pa-2 h-auto" min-width="300">
+                        <v-card-title>Tạo danh sách mới</v-card-title>
+                        <v-card-text>
+                            <v-text-field v-model="newWorktitle" :readonly="loading" :disabled="loading" :rules="rules"
+                                density="comfortable" label="Tiêu đề"></v-text-field>
+                            <div class="float-right mb-1">
+                                <v-btn color="error" class="mr-2" @click="closeAddWork">Đóng</v-btn>
+                                <v-btn :disabled="!formAddWork" :loading="loading" type="submit" color="success">Tạo</v-btn>
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </v-form>
+            </div>
         </div>
         <v-dialog v-model="isAddCard" persistent :max-width="600">
             <v-form v-model="formAddCard" @submit.prevent="addCard">
@@ -170,7 +182,7 @@ const cardsOfWork = ref([]);
 const panels = ref([]);
 const rules = [(value) => !!value || "Required!!!"];
 
-const { workListStore, workDetail } = await useWorkList(id);
+const { workListStore, workDetail, updateWorkRank } = await useWorkList(id);
 workList.value = workListStore.value;
 watch(workListStore, async () => {
     const { workListStore } = await useWorkList(id);
@@ -193,6 +205,7 @@ for (let i = 0; i < workList.value.length; i++) {
         cardTitleEdit.value[i][j] = {
             isEdit: false,
             title: "",
+            panelValue: i.toString() + j.toString(),
         };
     }
 }
@@ -214,6 +227,29 @@ async function onChangeTitle (editWorkId, event) {
     }
     loadingProgress.value = false;
 };
+
+async function draggableCard (draggableCardId, event) {
+    const { work } = workDetail(draggableCardId);
+    cardsOfWork.value = work.value.cards;
+    const oldIndex = event.moved.oldIndex;
+    const newIndex = event.moved.newIndex;
+    const tmp = cardsOfWork.value[oldIndex];
+    if (oldIndex < newIndex) {
+        for (let i = oldIndex; i < newIndex; i++) {
+            cardsOfWork.value[i] = cardsOfWork.value[i + 1];
+        }
+    } else {
+        for (let i = oldIndex; i > newIndex; i--) {
+            cardsOfWork.value[i] = cardsOfWork.value[i - 1];
+        }
+    }
+    cardsOfWork.value[newIndex] = tmp;
+    const { error } = await updateCard(draggableCardId, cardsOfWork.value);
+}
+
+async function draggableWork (event) {
+    const { error } = await updateWorkRank(event.moved.oldIndex, event.moved.newIndex);
+}
 
 async function addWork () {
     loading.value = true;
@@ -358,7 +394,7 @@ watchEffect(() => {
         width: 16px;
         background-color: rgba(0, 0, 0, 0.4);
         cursor: pointer;
-        animation: appear .3s ease-in-out;
+        animation: left-2-right .3s ease-in-out;
 
         .chevron-right {
             display: flex;
@@ -386,9 +422,12 @@ watchEffect(() => {
     .work-list {
         height: 100vh;
         display: flex;
-        overflow-x: scroll;
-        padding: 16px;
+        padding: 16px 0 16px 16px;
         flex: 1;
+
+        &>.v-card {
+            height: fit-content;
+        }
 
         .work {
             min-width: 300px;
@@ -442,10 +481,16 @@ watchEffect(() => {
             }
         }
 
-        .new-board {
-            height: fit-content !important;
-            max-height: 90vh;
-        }
+    }
+
+    .new-board {
+        height: fit-content !important;
+        max-height: 90vh;
+        animation: fade 0.3s ease-in;
+    }
+
+    .add-work-btn {
+        animation: fade 0.3s ease-in;
     }
 }
 
@@ -453,7 +498,7 @@ watchEffect(() => {
     text-transform: none;
 }
 
-@keyframes appear {
+@keyframes left-2-right {
     from {
         transform: translateX(-100%);
     }
@@ -461,5 +506,34 @@ watchEffect(() => {
     to {
         transform: translateX(0);
     }
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.drag>.work {
+    transform: rotate(100deg);
+}
+
+.ghostWork,
+.ghost {
+    background: #f1f1f1;
+}
+
+.ghostWork input,
+.ghostWork hr,
+.ghostWork>div {
+    visibility: hidden;
+}
+
+.ghost>div {
+    visibility: hidden;
 }
 </style>
