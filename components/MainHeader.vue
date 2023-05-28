@@ -38,8 +38,11 @@
 import logo from "../assets/images/logo.gif"
 import { useUser, useLogout } from '~~/composable/useFirebase'
 
-
-const { user } = await useUser();
+const user = ref(null);
+(async () => {
+    const { user: userCurr } = await useUser();
+    user.value = userCurr.value;
+})();
 
 const isShowLogout = ref(false);
 const isPending = ref(false);
