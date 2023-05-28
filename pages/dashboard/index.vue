@@ -74,7 +74,6 @@ boards.value = boardStore.value;
 
 watch(boardStore, async () => {
     const { boardStore } = await useBoards();
-
     boards.value = boardStore.value;
 })
 function handelStatus (event) {

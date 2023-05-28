@@ -22,6 +22,11 @@
                         <label v-bind="props" :for="work.id" class="workTitleWrapper d-flex">
                             <input type="text" :id="work.id" class="workTitle" :value="work.title"
                                 @change="onChangeTitle(work.id, $event)">
+                            <div class="d-flex justify-center align-center ml-2 mr-2">
+                                <v-badge v-if="!isHovering" color="success" :content="numberOfCards[index]">
+                                    <v-icon icon="mdi-card-multiple"></v-icon>
+                                </v-badge>
+                            </div>
                             <div v-if="isHovering" class="ml-2 mr-2 delete-btn d-flex align-center justify-center"
                                 @click.prevent="deleteBoard(work.id)">
                                 <v-icon icon="mdi-window-close"></v-icon>
@@ -55,7 +60,7 @@
                                                                 class="mr-3" width="100" type="submit">Chỉnh
                                                                 sửa</v-btn>
                                                             <v-btn color="error" width="60"
-                                                                @click="deleteCard(work.id, i)">Xóa</v-btn>
+                                                                @click.prevent="deleteCard(work.id, i)">Xóa</v-btn>
                                                         </div>
                                                     </v-form>
                                                 </v-expansion-panel-text>
@@ -65,7 +70,7 @@
                                             vertical></v-divider>
                                         <div>
                                             <div v-if="isHovering && !cardTitleEdit[index][i]?.isEdit"
-                                                class="ml-2 delete-btn" @click="deleteCard(work.id, i)">
+                                                class="ml-2 delete-btn" @click.prevent="deleteCard(work.id, i)">
                                                 <v-icon icon="mdi-delete"></v-icon>
                                             </div>
                                         </div>
@@ -180,6 +185,7 @@ const isSuccess = ref(false);
 const isFalse = ref(false);
 const cardsOfWork = ref([]);
 const panels = ref([]);
+const numberOfCards = ref([]);
 const rules = [(value) => !!value || "Required!!!"];
 
 const { workListStore, workDetail, updateWorkRank } = await useWorkList(id);
@@ -189,6 +195,7 @@ watch(workListStore, async () => {
     workList.value = workListStore.value;
     for (let i = 0; i < workList.value.length; i++) {
         cardTitleEdit.value[i] = [];
+        numberOfCards.value[i] = workList.value[i].cards.length;
         for (let j = 0; j < workList.value[i].cards.length; j++) {
             cardTitleEdit.value[i][j] = {
                 isEdit: false,
@@ -201,6 +208,7 @@ watch(workListStore, async () => {
 
 for (let i = 0; i < workList.value.length; i++) {
     cardTitleEdit.value[i] = [];
+    numberOfCards.value[i] = workList.value[i].cards.length;
     for (let j = 0; j < workList.value[i].cards.length; j++) {
         cardTitleEdit.value[i][j] = {
             isEdit: false,
@@ -281,6 +289,7 @@ async function addCard () {
     } else {
         isFalse.value = true;
     }
+    panels.value = [];
     cardTitle.value = "";
 }
 
@@ -318,6 +327,7 @@ async function deleteCard (deleteWordId, cardIndex) {
     cardsOfWork.value.splice(cardIndex, 1);
     const { error } = await updateCard(deleteWordId, cardsOfWork.value);
     loadingProgress.value = false;
+    panels.value = [];
     if (!error.value) {
         isSuccess.value = true;
     } else {
@@ -359,7 +369,6 @@ function showEditCardTitle (workIndex, cardIndex) {
             }
         }
     }
-
 }
 watchEffect(() => {
     if (workId.value) {
