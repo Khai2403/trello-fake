@@ -8,8 +8,8 @@
                 <v-icon icon="mdi-close" class="text-medium-emphasis close-btn" @click="closeAddBoardModal"></v-icon>
             </v-row>
             <v-form v-model="form" @submit.prevent="addBoard" class="mt-3">
-                <v-text-field v-model="boardTitle" label="Tên bảng" :rules="rules" :readonly="loading"
-                    density="comfortable"></v-text-field>
+                <v-text-field v-model="boardTitle" label="Tên bảng" :rules="rules" :readonly="loading" density="comfortable"
+                    :autofocus="true"></v-text-field>
                 <v-btn v-if="!chooseColor" @click="chooseColor = true" depressed class="w-100 " color="#ddd"
                     :disabled="loading">Chọn màu cho
                     bảng</v-btn>

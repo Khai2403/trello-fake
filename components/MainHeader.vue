@@ -12,9 +12,9 @@
                 <v-card>
                     <v-card-text>
                         <div class="mx-auto text-center">
-                            <h3>{{ user.displayName }}</h3>
+                            <h3>{{ userCurr.displayName }}</h3>
                             <p class="text-caption mt-1">
-                                {{ user.email }}
+                                {{ userCurr.email }}
                             </p>
                             <v-divider class="my-3"></v-divider>
                             <v-btn @click="logout" rounded variant="text" prepend-icon="mdi-logout-variant">
@@ -38,8 +38,11 @@
 import logo from "../assets/images/logo.gif"
 import { useUser, useLogout } from '~~/composable/useFirebase'
 
-
-const { user } = await useUser();
+const userCurr = ref(null);
+(async () => {
+    const { user } = await useUser();
+    userCurr.value = user.value;
+})();
 
 const isShowLogout = ref(false);
 const isPending = ref(false);

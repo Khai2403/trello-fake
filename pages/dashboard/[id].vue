@@ -281,7 +281,6 @@ async function addCard () {
     } else {
         isFalse.value = true;
     }
-    cardTitle.value = "";
 }
 
 function showAddCard (event) {

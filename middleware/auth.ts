@@ -1,8 +1,8 @@
 import { useUser } from '~~/composable/useFirebase'
 
-const { user } = await useUser();
 
-export default defineNuxtRouteMiddleware((to, from) =>{
+export default defineNuxtRouteMiddleware(async (to, from) =>{
+    const { user } = await useUser();
     if(!user.value) {
        return navigateTo('/login');
     }

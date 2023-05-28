@@ -12,6 +12,9 @@ export default defineNuxtConfig({
       'process.env.DEBUG': false,
     },
   },
+  nitro: {
+    preset: 'firebase'
+  },
   
   runtimeConfig: {
     // The private keys which are only available server-side
