@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   getFirestore,
   onSnapshot,
   query,
@@ -64,10 +65,30 @@ export const useWorkList = async (boardId) => {
     });
   });
 
-  function workDetail(workId) {
-    const work = ref(null);
-    work.value = workListStore.value.find((work) => work.id === workId);
-    return { work };
+  async function updateDeletedWorkRank(deletedRank) {
+    const error = ref(null);
+    const db = getFirestore();
+    const dbDoc = ref(null);
+    if (deletedRank == workListStore.value.length + 1) {
+      return { error };
+    } else {
+      const works = workListStore.value.filter((work) => {
+        return work.rank > deletedRank;
+      });
+      for (let i = 0; i < works.length; i++) {
+        dbDoc.value = doc(db, "work-list", works[i].id);
+        try {
+          const response = await updateDoc(
+            dbDoc.value,
+            "rank",
+            works[i].rank - 1
+          );
+        } catch (err) {
+          error.value = err.message;
+        }
+      }
+    }
+    return { error };
   }
 
   async function updateWorkRank(oldIndex, newIndex) {
@@ -116,7 +137,23 @@ export const useWorkList = async (boardId) => {
     }
     return { error };
   }
-  return { workListStore, workDetail, updateWorkRank };
+  return { workListStore, updateWorkRank, updateDeletedWorkRank };
+};
+
+export const workDetail = async (workId) => {
+  const work = ref(null);
+  const db = getFirestore();
+  const docRef = doc(db, "work-list", workId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    work.value = docSnap.data();
+  }
+  onSnapshot(docRef, (snap) => {
+    if (snap.exists()) {
+      work.value = snap.data();
+    }
+  });
+  return { work };
 };
 
 export const updateCard = async (workId, cards) => {
