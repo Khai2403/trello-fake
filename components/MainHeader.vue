@@ -6,15 +6,18 @@
             </NuxtLink>
         </div>
         <div class="header__user">
-            <v-btn @click="showLogout" icon="mdi-account" size="40px" class="user-btn">
+            <v-btn @click="showLogout" size="40px" rounded>
+                <v-avatar color="white">
+                    <span class="text-h6">{{ user?.photoURL }}</span>
+                </v-avatar>
             </v-btn>
             <div v-if="isShowLogout" class="logout-modal" v-click-outside="closeLogoutModal">
                 <v-card>
                     <v-card-text>
                         <div class="mx-auto text-center">
-                            <h3>{{ user.displayName }}</h3>
+                            <h3>{{ user?.displayName }}</h3>
                             <p class="text-caption mt-1">
-                                {{ user.email }}
+                                {{ user?.email }}
                             </p>
                             <v-divider class="my-3"></v-divider>
                             <v-btn @click="logout" rounded variant="text" prepend-icon="mdi-logout-variant">
@@ -42,6 +45,8 @@ const user = ref(null);
 (async () => {
     const { user: userCurr } = await useUser();
     user.value = userCurr.value;
+    console.log(user.value);
+
 })();
 
 const isShowLogout = ref(false);

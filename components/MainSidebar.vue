@@ -33,7 +33,7 @@
                 <p class="text-subtitle-1">Các bảng của bạn</p>
                 <v-icon class="add-board" icon="mdi-plus" @click="addBoard = true"></v-icon>
             </div>
-            <div class="overflow-y-auto board-group">
+            <div v-if="isBoard" class="overflow-y-auto board-group">
                 <div v-for="board in boards" :key="board.id">
                     <v-hover v-slot="{ isHovering, props }">
                         <div v-bind="props" class="board d-flex align-center w-100 mt-2">
@@ -52,6 +52,9 @@
                         </div>
                     </v-hover>
                 </div>
+            </div>
+            <div v-else class="mt-2">
+                <span class="text-caption">Bạn chưa có bảng nào</span>
             </div>
             <v-dialog v-model="addBoard" :max-width="450" class="rounded-lg" persistent>
                 <add-board-modal @close-add-board="addBoard = false" @status="handelStatus" />
@@ -95,15 +98,25 @@ const addBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
 const loadingProgress = ref(false);
+const isBoard = ref(false);
 
 const { boardStore } = await useBoards();
 
 boards.value = boardStore.value;
+if (boardStore.value.length !== 0) {
+    isBoard.value = true;
+} else {
+    isBoard.value = false;
+}
 
 watch(boardStore, async () => {
     const { boardStore } = await useBoards();
-
     boards.value = boardStore.value;
+    if (boardStore.value.length !== 0) {
+        isBoard.value = true;
+    } else {
+        isBoard.value = false;
+    }
 });
 
 function hideSidebar () {

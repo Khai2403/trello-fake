@@ -36,7 +36,7 @@ export const useSignIn = async (email, password) => {
   return { error, response };
 };
 
-export const useSignUp = async (email, password, fullName) => {
+export const useSignUp = async (email, password, fullName, initialsName) => {
   const auth = getAuth();
   error.value = null;
   const response = ref(null);
@@ -49,6 +49,7 @@ export const useSignUp = async (email, password, fullName) => {
     if (!response.value) throw new Error("Couldn't create user");
     updateProfile(auth.currentUser, {
       displayName: fullName,
+      photoURL: initialsName,
     });
   } catch (err) {
     error.value = err.message;
@@ -96,7 +97,6 @@ export const useStorage = async (name) => {
     // console.log(filePath.value);
     const fileRef = storageRef(storage, filePath.value);
     // console.log(fileRef);
-
     try {
       const response = await uploadBytes(fileRef, file);
       url.value = await getDownloadURL(response.ref);

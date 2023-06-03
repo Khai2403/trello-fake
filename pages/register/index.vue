@@ -45,8 +45,9 @@ const showPassword = ref(false);
 
 async function register () {
     loading.value = true;
-    const fullName = ref(`${lastName.value} ${firstName.value}`)
-    const { error, response } = await useSignUp(email.value, password.value, fullName.value);
+    const fullName = ref(`${lastName.value} ${firstName.value}`);
+    const initialsName = ref(`${lastName.value.charAt(0).toUpperCase()}${firstName.value.charAt(0).toUpperCase()}`);
+    const { error, response } = await useSignUp(email.value, password.value, fullName.value, initialsName.value);
     errorRegister.value = error.value;
     if (!error.value) {
         navigateTo('/login');
