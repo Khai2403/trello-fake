@@ -1,89 +1,53 @@
-<template>
-    <div class="dashboard"
-        :style="`color: ${isDetail ? 'white' : 'black'};background-color:${isDetail ? 'rgba(0, 0, 0, 0.6)' : 'white'};`">
-        <v-row class="dashboard__title" no-gutters>
-            <v-col cols="2" class="dashboard__title__logo">
-                <div class="w-100">
-                    <nuxt-link to="/dashboard" class="text-white text-decoration-none d-flex justify-center">
-                        T
-                    </nuxt-link>
-                </div>
-            </v-col>
-            <v-col cols="8" class="ml-2">
-                <nuxt-link to="/dashboard" class="text-decoration-none" :style="`color: ${isDetail ? 'white' : 'black'};`">
-                    <div class="font-weight-bold text-subtitle-1">
-                        Trello Không gian làm việc
-                    </div>
-                    <div class="text-subtitle-2">
-                        Miễn phí
-                    </div>
-                </nuxt-link>
-            </v-col>
-            <v-col cols="3">
-                <v-btn icon="mdi-chevron-left" flat @click="hideSidebar" color="transparent"></v-btn>
-            </v-col>
-        </v-row>
-        <v-divider :thickness="2"></v-divider>
-        <div class="ml-3 mr-3 ">
-            <v-btn class="w-100 d-flex justify-start mt-2" variant="text" to="/dashboard">
-                <v-icon icon="mdi-trello" class="mr-2"></v-icon>
-                Bảng
-            </v-btn>
-            <div class="d-flex justify-space-between mt-2">
-                <p class="text-subtitle-1">Các bảng của bạn</p>
-                <v-icon class="add-board" icon="mdi-plus" @click="addBoard = true"></v-icon>
-            </div>
-            <div v-if="isBoard" class="overflow-y-auto board-group">
-                <div v-for="board in boards" :key="board.id">
-                    <v-hover v-slot="{ isHovering, props }">
-                        <div v-bind="props" class="board d-flex align-center w-100 mt-2">
-                            <v-btn class="board__btn d-flex justify-start align-center" variant="text"
-                                :to="`/dashboard/${board.id}`">
-                                <div class="d-flex align-center board__title">
-                                    <div :style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img ? board?.img : ''}')`"
-                                        class="board__img">
-                                    </div>
-                                    {{ board?.title }}
-                                </div>
-                            </v-btn>
-                            <div v-if="isHovering" class="delete__board__btn d-flex align-center justify-center">
-                                <v-icon icon="mdi-delete" @click.prevent="deleteBoard(board.id)"></v-icon>
-                            </div>
-                        </div>
-                    </v-hover>
-                </div>
-            </div>
-            <div v-else class="mt-2">
-                <span class="text-caption">Bạn chưa có bảng nào</span>
-            </div>
-            <v-dialog v-model="addBoard" :max-width="450" class="rounded-lg" persistent>
-                <add-board-modal @close-add-board="addBoard = false" @status="handelStatus" />
-            </v-dialog>
-        </div>
-        <v-snackbar v-model="isSuccess" color="success" :timeout="3000">
-            Success!!!
-
-            <template v-slot:actions>
-                <v-btn variant="text" @click="isSuccess = false">
-                    Close
-                </v-btn>
-            </template>
-        </v-snackbar>
-        <v-snackbar v-model="isFalse" color="error" :timeout="3000">
-            Failure!!!
-
-            <template v-slot:actions>
-                <v-btn variant="text" @click="isFalse = false">
-                    Close
-                </v-btn>
-            </template>
-        </v-snackbar>
-        <v-dialog v-model="loadingProgress" persistent :max-width="200" class="d-flex align-center justify-center">
-            <div class="d-flex justify-center align-center">
-                <v-progress-circular color="success" :size="60" indeterminate></v-progress-circular>
-            </div>
-        </v-dialog>
-    </div>
+<template lang="pug">
+.dashboard(:style="`color: ${isDetail ? 'white' : 'black'};background-color:${isDetail ? 'rgba(0, 0, 0, 0.6)' : 'white'};`")
+    v-row.dashboard__title(no-gutters='')
+        v-col.dashboard__title__logo(cols='2')
+            .w-100
+                nuxt-link.text-white.text-decoration-none.d-flex.justify-center(to='/dashboard')
+                    | T
+        v-col.ml-2(cols='8')
+            nuxt-link.text-decoration-none(to='/dashboard', :style="`color: ${isDetail ? 'white' : 'black'};`")
+                .font-weight-bold.text-subtitle-1
+                    | Trello Không gian làm việc
+                .text-subtitle-2
+                    | Miễn phí
+        v-col(cols='3')
+            v-btn(icon='mdi-chevron-left', flat='', @click='hideSidebar', color='transparent')
+    v-divider(:thickness='2')
+    .ml-3.mr-3
+        v-btn.w-100.d-flex.justify-start.mt-2(variant='text', to='/dashboard')
+            v-icon.mr-2(icon='mdi-trello')
+            | Bảng
+        .d-flex.justify-space-between.mt-2
+            p.text-subtitle-1 Các bảng của bạn
+            v-icon.add-board(icon='mdi-plus', @click='addBoard = true')
+        .overflow-y-auto.board-group(v-if='isBoard')
+            div(v-for='board in boards', :key='board.id')
+                v-hover(v-slot='{ isHovering, props }')
+                    .board.d-flex.align-center.w-100.mt-2(v-bind='props')
+                        v-btn.board__btn.d-flex.justify-start.align-center(variant='text', :to='`/dashboard/${board.id}`')
+                            .d-flex.align-center.board__title
+                                .board__img(:style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img ? board?.img : ''}')`")
+                                | {{ board?.title }}
+                        .delete__board__btn.d-flex.align-center.justify-center(v-if='isHovering')
+                            v-icon(icon='mdi-delete', @click.prevent='deleteBoard(board.id)')
+        .mt-2(v-else='')
+            span.text-caption Bạn chưa có bảng nào
+        v-dialog.rounded-lg(v-model='addBoard', :max-width='450', persistent='')
+            AddBoardModal(@close-add-board='addBoard = false', @status='handelStatus')
+    v-snackbar(v-model='isSuccess', color='success', :timeout='3000')
+        | Success!!!
+        template(v-slot:actions='')
+            v-btn(variant='text', @click='isSuccess = false')
+                | Close
+    v-snackbar(v-model='isFalse', color='error', :timeout='3000')
+        | Failure!!!
+        template(v-slot:actions='')
+            v-btn(variant='text', @click='isFalse = false')
+                | Close
+    v-dialog.d-flex.align-center.justify-center(v-model='loadingProgress', persistent='', :max-width='200')
+        .d-flex.justify-center.align-center
+            v-progress-circular(color='success', :size='60', indeterminate='')
 </template>
 
 <script setup>

@@ -1,40 +1,26 @@
-<template>
-    <div class="header">
-        <div class="header__logo">
-            <NuxtLink to="/dashboard">
-                <v-img :width="120" aspect-ratio="4/3" cover :src="logo" :lazy-src="logo" alt="logo"></v-img>
-            </NuxtLink>
-        </div>
-        <div class="header__user">
-            <v-btn @click="showLogout" size="40px" rounded>
-                <v-avatar color="white">
-                    <span class="text-h6">{{ user?.photoURL }}</span>
-                </v-avatar>
-            </v-btn>
-            <div v-if="isShowLogout" class="logout-modal" v-click-outside="closeLogoutModal">
-                <v-card>
-                    <v-card-text>
-                        <div class="mx-auto text-center">
-                            <h3>{{ user?.displayName }}</h3>
-                            <p class="text-caption mt-1">
-                                {{ user?.email }}
-                            </p>
-                            <v-divider class="my-3"></v-divider>
-                            <v-btn @click="logout" rounded variant="text" prepend-icon="mdi-logout-variant">
-                                Đăng xuất
-                            </v-btn>
-                        </div>
-                    </v-card-text>
-                </v-card>
-            </div>
-            <div v-if="isShowLogout" class="border-triangle"></div>
-        </div>
-        <v-dialog v-model="isPending" persistent>
-            <div class="d-flex justify-center align-center">
-                <v-progress-circular indeterminate :size="64"></v-progress-circular>
-            </div>
-        </v-dialog>
-    </div>
+<template lang="pug">
+.header
+    .header__logo
+        nuxt-link(to='/dashboard')
+            v-img(:width='120', aspect-ratio='4/3', cover='', :src='logo', :lazy-src='logo', alt='logo')
+    .header__user
+        v-btn(@click='showLogout', size='40px', rounded='')
+            v-avatar(color='white')
+                span.text-h6 {{ user?.photoURL }}
+        .logout-modal(v-if='isShowLogout', v-click-outside='closeLogoutModal')
+            v-card
+                v-card-text
+                    .mx-auto.text-center
+                        h3 {{ user?.displayName }}
+                        p.text-caption.mt-1
+                            | {{ user?.email }}
+                        v-divider.my-3
+                        v-btn(@click='logout', rounded='', variant='text', prepend-icon='mdi-logout-variant')
+                            | Đăng xuất
+        .border-triangle(v-if='isShowLogout')
+    v-dialog(v-model='isPending', persistent='')
+        .d-flex.justify-center.align-center
+            v-progress-circular(indeterminate='', :size='64')
 </template>
 
 <script setup>

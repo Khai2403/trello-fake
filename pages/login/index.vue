@@ -1,21 +1,15 @@
-<template>
-    <div class="d-flex justify-center align-center">
-        <v-sheet :width="480" class="mx-auto login-wrapper">
-            <p class="login-title d-flex justify-center">Đăng nhập vào Trello</p>
-            <v-form v-model="form" @submit.prevent="login">
-                <v-text-field v-model="email" label="Email" :rules="rules" :readonly="loading"></v-text-field>
-                <v-text-field v-model="password" label="Mật khẩu" :rules="rules"
-                    :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="togglePassword"
-                    :type="showPassword ? 'text' : 'password'" :readonly="loading"></v-text-field>
-                <v-btn :disabled="!form" :loading="loading" type="submit" class="login-btn mt-2">Đăng nhập</v-btn>
-                <v-card-text v-if="errorLogin" class="text-error">Something went wrong!!!</v-card-text>
-            </v-form>
-            <div class="register float-right mt-5">
-                <span class="mr-1">Bạn chưa có tài khoản? </span>
-                <nuxt-link to="/register" class="redirect-btn">Đăng ký ngay</nuxt-link>
-            </div>
-        </v-sheet>
-    </div>
+<template lang="pug">
+.d-flex.justify-center.align-center
+    v-sheet.mx-auto.login-wrapper(:width='480')
+        p.login-title.d-flex.justify-center Đăng nhập vào Trello
+        v-form(v-model='form', @submit.prevent='login')
+            v-text-field(v-model='email', label='Email', :rules='rules', :readonly='loading')
+            v-text-field(v-model='password', label='Mật khẩu', :rules='rules', :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'", @click:append-inner='togglePassword', :type="showPassword ? 'text' : 'password'", :readonly='loading')
+            v-btn.login-btn.mt-2(:disabled='!form', :loading='loading', type='submit') Đăng nhập
+            v-card-text.text-error(v-if='errorLogin') Something went wrong!!!
+        .register.float-right.mt-5
+            span.mr-1 Bạn chưa có tài khoản?
+            nuxt-link.redirect-btn(to='/register') Đăng ký ngay
 </template>
 
 <script setup>

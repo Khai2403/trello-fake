@@ -1,54 +1,34 @@
-<template>
-    <div class="dashboard-wrapper">
-        <v-fade-transition v-if="!hideSidebar">
-            <MainSidebar v-show="!hideSidebar" @hide-sidebar="handelHideSidebar" :is-detail="isDetail" />
-        </v-fade-transition>
-        <div v-if="hideSidebar" class="d-flex flex-column mr-3">
-            <div class="sidebar" @click="hideSidebar = false">
-                <div class="chevron-right">
-                    <v-icon icon="mdi-chevron-right"></v-icon>
-                </div>
-            </div>
-        </div>
-        <v-divider :thickness="2" vertical v-if="!hideSidebar"></v-divider>
-        <div class="board-list">
-            <v-row>
-                <v-col cols="12" sm="6" md="4" lg="3" xl="3" xxl="2" v-for="board in boards" :key="board.id" class="card">
-                    <NuxtLink :to="`/dashboard/${board.id}`" class="text-decoration-none">
-                        <v-card class="ml-3 rounded-lg text-white"
-                            :style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img}');background-size: cover;background-position: center;`">
-                            <p class="d-flex justify-start mt-1 ml-2">{{ board.title }}</p>
-                            <p class="d-flex justify-start ml-2">{{ board.createdAt }}</p>
-                        </v-card>
-                    </NuxtLink>
-                </v-col>
-                <v-col cols="12" sm="6" md="4" lg="3" xl="3" xxl="2" class="card">
-                    <v-card class="ml-3 d-flex justify-center align-center" @click="addBoard = true">
-                        <p class="">Tạo bảng mới</p>
-                    </v-card>
-                </v-col>
-            </v-row>
-            <v-dialog v-model="addBoard" :max-width="450" class="rounded-lg" persistent>
-                <add-board-modal @close-add-board="addBoard = false" @status="handelStatus" />
-            </v-dialog>
-            <v-snackbar v-model="isSuccess" color="success" :timeout="3000">
-                Success!!!
-                <template v-slot:actions>
-                    <v-btn variant="text" @click="isSuccess = false">
-                        Close
-                    </v-btn>
-                </template>
-            </v-snackbar>
-            <v-snackbar v-model="isFalse" color="error" :timeout="3000">
-                Failure!!!
-                <template v-slot:actions>
-                    <v-btn variant="text" @click="isFalse = false">
-                        Close
-                    </v-btn>
-                </template>
-            </v-snackbar>
-        </div>
-    </div>
+<template lang="pug">
+.dashboard-wrapper
+    v-fade-transition(v-if='!hideSidebar')
+        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail')
+    .d-flex.flex-column.mr-3(v-if='hideSidebar')
+        .sidebar(@click='hideSidebar = false')
+            .chevron-right
+                v-icon(icon='mdi-chevron-right')
+    v-divider(:thickness='2', vertical='', v-if='!hideSidebar')
+    .board-list
+        v-row
+            v-col.card(cols='12', sm='6', md='4', lg='3', xl='3', xxl='2', v-for='board in boards', :key='board.id')
+                nuxt-link.text-decoration-none(:to='`/dashboard/${board.id}`')
+                    v-card.ml-3.rounded-lg.text-white(:style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img}');background-size: cover;background-position: center;`")
+                        p.d-flex.justify-start.mt-1.ml-2 {{ board.title }}
+                        p.d-flex.justify-start.ml-2 {{ board.createdAt }}
+            v-col.card(cols='12', sm='6', md='4', lg='3', xl='3', xxl='2')
+                v-card.ml-3.d-flex.justify-center.align-center(@click='addBoard = true')
+                    p Tạo bảng mới
+        v-dialog.rounded-lg(v-model='addBoard', :max-width='450', persistent='')
+            add-board-modal(@close-add-board='addBoard = false', @status='handelStatus')
+        v-snackbar(v-model='isSuccess', color='success', :timeout='3000')
+            | Success!!!
+            template(v-slot:actions='')
+                v-btn(variant='text', @click='isSuccess = false')
+                    | Close
+        v-snackbar(v-model='isFalse', color='error', :timeout='3000')
+            | Failure!!!
+            template(v-slot:actions='')
+                v-btn(variant='text', @click='isFalse = false')
+                    | Close
 </template>
 
 <script setup>

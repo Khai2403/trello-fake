@@ -10,7 +10,9 @@
   },
   "devDependencies": {
     "@mdi/font": "^7.2.96",
-    "nuxt": "^3.3.2"
+    "nuxt": "^3.3.2",
+    "pug": "^3.0.2",
+    "pug-plain-loader": "^1.1.0"
   },
   "dependencies": {
     "firebase": "^9.20.0",

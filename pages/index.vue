@@ -1,26 +1,16 @@
-<template>
-    <div class="home">
-        <div class="img">
-            <img src="../assets/images/background.jpg" alt="">
-        </div>
-
-        <div class="sub-footer-wrapper">
-            <div class="sub-footer">
-                <v-row no-gutters>
-                    <v-col cols="12" class="sub-footer__text d-flex justify-center">Bắt đầu sử dụng Trello ngay hôm
-                        nay</v-col>
-                </v-row>
-                <v-row no-gutters class="mt-4">
-                    <v-col cols="12" class="d-flex justify-center">
-                        <nuxt-link to="/register">
-                            <v-btn class="btn">Đăng ký - hoàn toàn miễn phí!</v-btn>
-                        </nuxt-link>
-                    </v-col>
-                </v-row>
-            </div>
-        </div>
-
-    </div>
+<template lang="pug">
+.home
+    .img
+        img(src='../assets/images/background.jpg', alt='')
+    .sub-footer-wrapper
+        .sub-footer
+            v-row(no-gutters='')
+                v-col.sub-footer__text.d-flex.justify-center(cols='12')
+                | Bắt đầu sử dụng Trello ngay hôm nay
+            v-row.mt-4(no-gutters='')
+                v-col.d-flex.justify-center(cols='12')
+                    nuxt-link(to='/register')
+                        v-btn.btn Đăng ký - hoàn toàn miễn phí!
 </template>
 
 <script setup>

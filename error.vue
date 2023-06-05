@@ -1,9 +1,9 @@
-<template>
-    <h1>Error </h1>
-    <h3>oops...</h3>
+<template lang="pug">
+h1 Error
+h3 oops...
 </template>
-
+    
 <script>
 </script>
-
+    
 <style></style>

@@ -1,29 +1,20 @@
-<template>
-    <div class="d-flex justify-center align-center">
-        <v-sheet :width="480" class="mx-auto register-wrapper">
-            <p class="register-title d-flex justify-center">Đăng ký tài khoản</p>
-            <v-form v-model="form" @submit.prevent="register">
-                <v-row>
-                    <v-col cols="6">
-                        <v-text-field v-model="firstName" label="Họ" :rules="rules" :readonly="loading"></v-text-field>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-text-field v-model="lastName" label="Tên" :rules="rules" :readonly="loading"></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-text-field v-model="email" label="Email" :rules="rules" :readonly="loading"></v-text-field>
-                <v-text-field v-model="password" label="Mật khẩu" :rules="rules"
-                    :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="togglePassword"
-                    :type="showPassword ? 'text' : 'password'" :readonly="loading"></v-text-field>
-                <v-btn :disabled="!form" :loading="loading" type="submit" class="register-btn mt-2">Đăng ký</v-btn>
-                <v-card-text v-if="errorRegister" class="text-error">Something went wrong!!!</v-card-text>
-            </v-form>
-            <div class="register float-right mt-5">
-                <span class="mr-1">Bạn đã có tài khoản? </span>
-                <nuxt-link to="/login" class="redirect-btn">Đăng nhập</nuxt-link>
-            </div>
-        </v-sheet>
-    </div>
+<template lang="pug">
+.d-flex.justify-center.align-center
+    v-sheet.mx-auto.register-wrapper(:width='480')
+        p.register-title.d-flex.justify-center Đăng ký tài khoản
+        v-form(v-model='form', @submit.prevent='register')
+            v-row
+                v-col(cols='6')
+                    v-text-field(v-model='firstName', label='Họ', :rules='rules', :readonly='loading')
+                v-col(cols='6')
+                    v-text-field(v-model='lastName', label='Tên', :rules='rules', :readonly='loading')
+            v-text-field(v-model='email', label='Email', :rules='rules', :readonly='loading')
+            v-text-field(v-model='password', label='Mật khẩu', :rules='rules', :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'", @click:append-inner='togglePassword', :type="showPassword ? 'text' : 'password'", :readonly='loading')
+            v-btn.register-btn.mt-2(:disabled='!form', :loading='loading', type='submit') Đăng ký
+            v-card-text.text-error(v-if='errorRegister') Something went wrong!!!
+        .register.float-right.mt-5
+            span.mr-1 Bạn đã có tài khoản?
+            nuxt-link.redirect-btn(to='/login') Đăng nhập
 </template>
 
 <script setup>

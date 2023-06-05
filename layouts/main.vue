@@ -1,10 +1,8 @@
-<template>
-    <div>
-        <MainHeader />
-        <div class="space"></div>
-        <slot />
-        <MainFooter />
-    </div>
+<template lang="pug">
+MainHeader
+.space
+slot
+MainFooter
 </template>
 
 <script setup>

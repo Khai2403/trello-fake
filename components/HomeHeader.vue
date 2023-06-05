@@ -1,23 +1,15 @@
-<template>
-    <div class="header">
-        <div class="header__logo">
-            <NuxtLink to="/">
-                <v-img :width="120" aspect-ratio="4/3" cover :src="logo" :lazy-src="logo" alt="logo"></v-img>
-            </NuxtLink>
-        </div>
-        <div class="header__auth">
-            <NuxtLink to="/login" class="text-decoration-none mr-4">
-                <v-btn>
-                    Đăng Nhập
-                </v-btn>
-            </NuxtLink>
-            <NuxtLink to="/register" class="text-decoration-none">
-                <v-btn>
-                    Đăng ký
-                </v-btn>
-            </NuxtLink>
-        </div>
-    </div>
+<template lang="pug">
+.header
+    .header__logo
+        nuxt-link(to='/')
+            v-img(:width='120', aspect-ratio='4/3', cover='', :src='logo', :lazy-src='logo', alt='logo')
+    .header__auth
+        nuxt-link.text-decoration-none.mr-4(to='/login')
+            v-btn
+                | Đăng Nhập
+        nuxt-link.text-decoration-none(to='/register')
+            v-btn
+                | Đăng ký
 </template>
 
 <script setup>

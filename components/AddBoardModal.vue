@@ -1,38 +1,25 @@
-<template>
-    <v-container>
-        <v-card class="pa-4">
-            <v-row no-gutters>
-                <v-row no-gutters>
-                    <h3>Tạo bảng</h3>
-                </v-row>
-                <v-icon icon="mdi-close" class="text-medium-emphasis close-btn" @click="closeAddBoardModal"></v-icon>
-            </v-row>
-            <v-form v-model="form" @submit.prevent="addBoard" class="mt-3">
-                <v-text-field v-model="boardTitle" label="Tên bảng" :rules="rules" :readonly="loading"
-                    density="comfortable"></v-text-field>
-                <v-btn v-if="!chooseColor" @click="chooseColor = true" depressed class="w-100 " color="#ddd"
-                    :disabled="loading">Chọn màu cho
-                    bảng</v-btn>
-                <v-color-picker v-model="backgroundColor" v-if="chooseColor" width="386" dot-size="25" hide-inputs
-                    swatches-max-height="100" canvas-height="100" :disabled="loading"></v-color-picker>
-                <label for="boardImg" class="d-flex align-center justify-center flex-column mt-3 upload-block" :style="`background-image: url('${boardImgUrl ? boardImgUrl : ''
-                    }');height:150px;background-size: cover;background-position: center;`">
-                    <template v-if="!fileToUploProgress && !boardImgUrl">
-                        <v-icon icon="mdi-camera"></v-icon>
-                        <p>Thêm ảnh nền</p>
-                    </template>
-                    <input type="file" accept="jpg, jpeg, png" ref="boardBackground" id="boardImg" buffer-value="0"
-                        @change="onFileSelected($event)" style="display: none" :disabled="loading" />
-                    <template v-if="fileToUploProgress">
-                        <div class="text-center">
-                            <v-progress-circular :size="50" color="green" indeterminate></v-progress-circular>
-                        </div>
-                    </template>
-                </label>
-                <v-btn :disabled="!form" :loading="loading" type="submit" color="success" class="w-100">Tạo bảng</v-btn>
-            </v-form>
-        </v-card>
-    </v-container>
+<template lang="pug">
+v-container
+    v-card.pa-4
+        v-row(no-gutters='')
+            v-row(no-gutters='')
+                h3 Tạo bảng
+            v-icon.text-medium-emphasis.close-btn(icon='mdi-close', @click='closeAddBoardModal')
+        v-form.mt-3(v-model='form', @submit.prevent='addBoard')
+            v-text-field(v-model='boardTitle', label='Tên bảng', :rules='rules', :readonly='loading', density='comfortable')
+            v-btn.w-100(v-if='!chooseColor', @click='chooseColor = true', depressed='', color='#ddd', :disabled='loading')
+                | Chọn màu cho bảng
+            v-color-picker(v-model='backgroundColor', v-if='chooseColor', width='386', dot-size='25', hide-inputs='', swatches-max-height='100', canvas-height='100', :disabled='loading')
+            label.d-flex.align-center.justify-center.flex-column.mt-3.upload-block(for='boardImg', 
+            :style="`background-image: url('${boardImgUrl ? boardImgUrl : ''}');height:150px;background-size: cover;background-position: center;`")
+                template(v-if='!fileToUploProgress && !boardImgUrl')
+                    v-icon(icon='mdi-camera')
+                    p Thêm ảnh nền
+                input#boardImg(type='file', accept='jpg, jpeg, png', ref='boardBackground', buffer-value='0', @change='onFileSelected($event)', style='display: none', :disabled='loading')
+                template(v-if='fileToUploProgress')
+                    .text-center
+                        v-progress-circular(:size='50', color='green', indeterminate='')
+            v-btn.w-100(:disabled='!form', :loading='loading', type='submit', color='success') Tạo bảng
 </template>
 
 <script setup>

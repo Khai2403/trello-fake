@@ -1,59 +1,36 @@
-<template>
-    <div class="abc">
-        <v-hover v-slot="{ isHovering, props }">
-            <label v-bind="props" :for="workId" class="workTitleWrapper d-flex">
-                <input type="text" :id="workId" class="workTitle" :value="work.title" @change="onChangeTitle($event)">
-                <div v-if="!isHovering" class="d-flex justify-center align-center ml-2 mr-2">
-                    <v-badge color="success" :content="numberOfCards">
-                        <v-icon icon="mdi-card-multiple"></v-icon>
-                    </v-badge>
-                </div>
-                <div v-if="isHovering" class="ml-2 mr-2 delete-btn d-flex align-center justify-center"
-                    @click.prevent="deleteWork()">
-                    <v-icon icon="mdi-window-close"></v-icon>
-                </div>
-            </label>
-        </v-hover>
-        <v-divider :thickness="1"></v-divider>
-        <div class="overflow-y-auto card-group">
-            <draggable :list="work.cards" group="cards" @change="draggableCard($event)" ghost-class="ghost"
-                @add="addDraggableCard(workId, $event)" @remove="removeDraggableCard(workId, $event)">
-                <div v-for="(card, i) in work.cards" :key="i" class="card">
-                    <cardVue :work-id="workId" :index="i" @is-status="handleStatus($event)"></cardVue>
-                </div>
-            </draggable>
-        </div>
-        <div class="d-flex justify-center mt-1 mb-2">
-            <v-btn class="add-card-btn d-flex algin-center justify-center pa-2 pl-2 rounded-lg" variant="text"
-                @click="showAddCard()">
-                <v-icon icon="mdi-plus" class="mr-1"></v-icon>
-                Thêm thẻ
-            </v-btn>
-        </div>
-        <v-dialog v-model="isAddCard" persistent :max-width="600">
-            <v-form v-model="formAddCard" @submit.prevent="addCard">
-                <v-card class="pa-3">
-                    <v-card-title>
-                        <p class="text-h6 mb-3">Thêm thẻ cho bảng "{{ work?.title }}"</p>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-text-field color="blue" v-model="cardTitle" :autofocus="true" :rules="rules" :disabled="loading"
-                            placeholder="Nhập tiêu đề cho thẻ này..." label="Tiêu đề" :readonly="loading"></v-text-field>
-                    </v-card-text>
-                    <v-card-actions class="float-right">
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue" :disabled="loading" @click="closeAddCard">Đóng</v-btn>
-                        <v-btn color="blue" :disabled="!formAddCard" :loading="loading" type="submit">Thêm</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-form>
-        </v-dialog>
-        <v-dialog v-model="loadingProgress" persistent :max-width="200" class="d-flex align-center justify-center">
-            <div class="d-flex justify-center align-center">
-                <v-progress-circular color="success" :size="60" indeterminate></v-progress-circular>
-            </div>
-        </v-dialog>
-    </div>
+<template lang="pug">
+div
+    v-hover(v-slot='{ isHovering, props }')
+        label.workTitleWrapper.d-flex(v-bind='props', :for='workId')
+            input.workTitle(type='text', :id='workId', :value='work.title', @change='onChangeTitle($event)')
+            .d-flex.justify-center.align-center.ml-2.mr-2(v-if='!isHovering')
+                v-badge(color='success', :content='numberOfCards')
+                    v-icon(icon='mdi-card-multiple')
+            .ml-2.mr-2.delete-btn.d-flex.align-center.justify-center(v-if='isHovering', @click.prevent='deleteWork()')
+                v-icon(icon='mdi-window-close')
+    v-divider(:thickness='1')
+    .overflow-y-auto.card-group
+        draggable(:list='work.cards', group='cards', @change='draggableCard($event)', ghost-class='ghost', @add='addDraggableCard(workId, $event)', @remove='removeDraggableCard(workId, $event)')
+            .card(v-for='(card, i) in work.cards', :key='i')
+                cardVue(:work-id='workId', :index='i', @is-status='handleStatus($event)')
+    .d-flex.justify-center.mt-1.mb-2
+        v-btn.add-card-btn.d-flex.algin-center.justify-center.pa-2.pl-2.rounded-lg(variant='text', @click='showAddCard()')
+            v-icon.mr-1(icon='mdi-plus')
+            | Thêm thẻ
+    v-dialog(v-model='isAddCard', persistent='', :max-width='600')
+        v-form(v-model='formAddCard', @submit.prevent='addCard')
+            v-card.pa-3
+                v-card-title
+                    p.text-h6.mb-3 Thêm thẻ cho bảng "{{ work?.title }}"
+                v-card-text
+                    v-text-field(color='blue', v-model='cardTitle', :autofocus='true', :rules='rules', :disabled='loading', placeholder='Nhập tiêu đề cho thẻ này...', label='Tiêu đề', :readonly='loading')
+                v-card-actions.float-right
+                    v-spacer
+                    v-btn(color='blue', :disabled='loading', @click='closeAddCard') Đóng
+                    v-btn(color='blue', :disabled='!formAddCard', :loading='loading', type='submit') Thêm
+    v-dialog.d-flex.align-center.justify-center(v-model='loadingProgress', persistent='', :max-width='200')
+        .d-flex.justify-center.align-center
+            v-progress-circular(color='success', :size='60', indeterminate='')
 </template>
 
 <script setup>

@@ -1,75 +1,42 @@
-<template>
-    <div class="dashboard-wrapper"
-        :style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`">
-        <v-fade-transition v-if="!hideSidebar">
-            <MainSidebar v-show="!hideSidebar" @hide-sidebar="handelHideSidebar" :is-detail="isDetail"
-                :active-work-id="id" />
-        </v-fade-transition>
-        <div v-if="hideSidebar" class="d-flex flex-column mr-3">
-            <div class="sidebar" @click="hideSidebar = false">
-                <div class="chevron-right">
-                    <v-icon icon="mdi-chevron-right"></v-icon>
-                </div>
-            </div>
-        </div>
-        <v-divider :thickness="2" vertical v-if="!hideSidebar"
-            :style="`color: ${isDetail ? 'white' : 'black'};`"></v-divider>
-        <div class="d-flex overflow-x-auto overflow-y-hidden">
-            <draggable class="work-list" :list="workList" @change="draggableWork($event)" ghost-class="ghostWork"
-                handle=".work" item-key="id">
-                <v-card :draggable="true" v-for="(work, index) in workList" :key="work.id" class="work mr-5 rounded-lg">
-                    <workVue :work-id="work.id" :work-index="index" :board-id="id" @is-status="handleStatus($event)"
-                        @is-delete-status="handleDeletedStatus">
-                    </workVue>
-                </v-card>
-            </draggable>
-            <div class="mt-4 mr-5">
-                <div v-if="!isAddWork">
-                    <v-btn class="add-work-btn d-flex align-center rounded-lg pa-6" min-width="300" @click="showAddWork">
-                        <v-icon icon="mdi-plus" class="mr-1"></v-icon>
-                        Thêm danh sách khác
-                    </v-btn>
-                </div>
-                <v-form v-if="isAddWork" v-model="formAddWork" @submit.prevent="addWork">
-                    <v-card v-click-outside="closeAddWork" class="new-board rounded-lg pa-2 h-auto" min-width="300">
-                        <v-card-title>Tạo danh sách mới</v-card-title>
-                        <v-card-text>
-                            <v-text-field v-model="newWorktitle" :readonly="loading" :disabled="loading" :rules="rules"
-                                density="comfortable" label="Tiêu đề" :autofocus="true"></v-text-field>
-                            <div class="d-flex float-right mb-1">
-                                <v-btn color="error" class="mr-2" @click="closeAddWork">Đóng</v-btn>
-                                <v-btn :disabled="!formAddWork" :loading="loading" type="submit" color="success">Tạo</v-btn>
-                            </div>
-                        </v-card-text>
-                    </v-card>
-                </v-form>
-            </div>
-        </div>
-
-        <v-snackbar v-model="isSuccess" color="success" :timeout="3000">
-            Success!!!
-
-            <template v-slot:actions>
-                <v-btn variant="text" @click="isSuccess = false">
-                    Close
-                </v-btn>
-            </template>
-        </v-snackbar>
-        <v-snackbar v-model="isFalse" color="error" :timeout="3000">
-            Failure!!!
-
-            <template v-slot:actions>
-                <v-btn variant="text" @click="isFalse = false">
-                    Close
-                </v-btn>
-            </template>
-        </v-snackbar>
-        <v-dialog v-model="loadingProgress" persistent :max-width="200" class="d-flex align-center justify-center">
-            <div class="d-flex justify-center align-center">
-                <v-progress-circular color="success" :size="60" indeterminate></v-progress-circular>
-            </div>
-        </v-dialog>
-    </div>
+<template lang="pug">
+.dashboard-wrapper(:style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`")
+    v-fade-transition(v-if='!hideSidebar')
+        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail', :active-work-id='id')
+    .d-flex.flex-column.mr-3(v-if='hideSidebar')
+        .sidebar(@click='hideSidebar = false')
+            .chevron-right
+                v-icon(icon='mdi-chevron-right')
+    v-divider(:thickness='2', vertical='', v-if='!hideSidebar', :style="`color: ${isDetail ? 'white' : 'black'};`")
+    .d-flex.overflow-x-auto.overflow-y-hidden
+        draggable.work-list(:list='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
+            v-card.work.mr-5.rounded-lg(:draggable='true', v-for='(work, index) in workList', :key='work.id')
+                workVue(:work-id='work.id', :work-index='index', @is-status='handleStatus($event)', @is-delete-status='handleDeletedStatus')
+        .mt-4.mr-5
+            div(v-if='!isAddWork')
+                v-btn.add-work-btn.d-flex.align-center.rounded-lg.pa-6(min-width='300', @click='showAddWork')
+                    v-icon.mr-1(icon='mdi-plus')
+                    | Thêm danh sách khác
+            v-form(v-if='isAddWork', v-model='formAddWork', @submit.prevent='addWork')
+                v-card.new-board.rounded-lg.pa-2.h-auto(v-click-outside='closeAddWork', min-width='300')
+                    v-card-title Tạo danh sách mới
+                    v-card-text
+                        v-text-field(v-model='newWorktitle', :readonly='loading', :disabled='loading', :rules='rules', density='comfortable', label='Tiêu đề', :autofocus='true')
+                        .d-flex.float-right.mb-1
+                            v-btn.mr-2(color='error', @click='closeAddWork') Đóng
+                            v-btn(:disabled='!formAddWork', :loading='loading', type='submit', color='success') Tạo
+    v-snackbar(v-model='isSuccess', color='success', :timeout='3000')
+        | Success!!!
+        template(v-slot:actions='')
+            v-btn(variant='text', @click='isSuccess = false')
+                | Close
+    v-snackbar(v-model='isFalse', color='error', :timeout='3000')
+        | Failure!!!
+        template(v-slot:actions='')
+            v-btn(variant='text', @click='isFalse = false')
+                | Close
+    v-dialog.d-flex.align-center.justify-center(v-model='loadingProgress', :persistent='true', :max-width='200')
+        .d-flex.justify-center.align-center
+            v-progress-circular(color='success', :size='60', indeterminate='')
 </template>
 
 <script setup>
@@ -99,8 +66,12 @@ const rules = [(value) => !!value || "Required!!!"];
 const { workListStore, updateWorkRank, updateDeletedWorkRank } = await useWorkList(id);
 workList.value = workListStore.value;
 watch(workListStore, async () => {
-    const { workListStore } = await useWorkList(id);
-    workList.value = workListStore.value;
+    const { workListStore: workListCurrent } = await useWorkList(id);
+    if (workListCurrent !== null) {
+        workList.value = workListCurrent.value;
+    } else {
+        workList.value = [];
+    }
 });
 
 const { boardDetail } = await useBoards();
@@ -116,6 +87,7 @@ async function draggableWork (event) {
 
 async function addWork () {
     loading.value = true;
+    loadingProgress.value = true;
     const { error, addRecord } = useCollection('work-list');
     const newWork = {
         boardId: board.value.id,
@@ -126,6 +98,7 @@ async function addWork () {
     await addRecord(newWork);
     loading.value = false;
     isAddWork.value = false;
+    loadingProgress.value = false;
     if (!error.value) {
         isSuccess.value = true;
     } else {
