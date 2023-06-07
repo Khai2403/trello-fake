@@ -7,7 +7,7 @@
                     v-expansion-panel-title(@click='showEditCardTitle')
                         template(v-slot:actions='{ expanded }')
                             v-icon(:color="!expanded ? 'teal' : ''", :icon="expanded ? 'mdi-pencil' : 'mdi-chevron-down'")
-                        .text-subtitle-1 {{ card }}
+                        .text-subtitle-1.text-truncate {{ card }}
                     v-expansion-panel-text
                         v-form(v-model='formEditTitleCard', @submit.prevent='editTitleCard')
                             v-text-field(v-model='cardTitleEdit', label='Tiêu đề', :rules='rules')

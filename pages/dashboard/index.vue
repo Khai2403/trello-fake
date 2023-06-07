@@ -70,7 +70,7 @@ function handelHideSidebar () {
 
 <style lang="scss" scoped>
 .dashboard-wrapper {
-    height: 100vh;
+    height: 88vh;
     display: flex;
 
     ::-webkit-scrollbar {

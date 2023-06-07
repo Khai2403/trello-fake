@@ -31,8 +31,6 @@ const user = ref(null);
 (async () => {
     const { user: userCurr } = await useUser();
     user.value = userCurr.value;
-    console.log(user.value);
-
 })();
 
 const isShowLogout = ref(false);

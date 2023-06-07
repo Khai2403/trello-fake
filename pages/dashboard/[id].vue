@@ -136,7 +136,7 @@ async function handleDeletedStatus (event, workRank) {
 
 <style lang="scss" scoped>
 .dashboard-wrapper {
-    height: 100vh;
+    height: 88vh;
     display: flex;
 
     ::-webkit-scrollbar {
@@ -195,6 +195,7 @@ async function handleDeletedStatus (event, workRank) {
 
         .work {
             min-width: 300px;
+            max-width: 500px;
             height: fit-content;
             display: flex;
             flex-direction: column;
