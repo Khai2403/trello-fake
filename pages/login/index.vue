@@ -13,7 +13,8 @@
 </template>
 
 <script setup>
-import { useSignIn } from '~~/composable/useFirebase'
+import { useSignIn } from '~~/composable/useFirebase';
+import { toast } from "vue3-toastify";
 definePageMeta({
     layout: 'auth',
 });
@@ -30,7 +31,10 @@ async function login () {
     const { error, response } = await useSignIn(email.value, password.value);
     errorLogin.value = error.value;
     if (!error.value) {
-        navigateTo('/dashboard');
+        await navigateTo('/dashboard');
+        toast.success("Đăng nhập thành công");
+    } else {
+        toast.error("Đăng nhập thất bại");
     }
     loading.value = false;
 }

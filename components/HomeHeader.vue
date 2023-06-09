@@ -37,9 +37,5 @@ import logo from "../assets/images/logo.gif"
         display: flex;
         justify-content: space-between;
     }
-
-    .v-btn {
-        // background-color: #adc241;
-    }
 }
 </style>
