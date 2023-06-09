@@ -18,7 +18,8 @@
 </template>
 
 <script setup>
-import { useSignUp } from "~~/composable/useFirebase"
+import { useSignUp } from "~~/composable/useFirebase";
+import { toast } from "vue3-toastify";
 
 definePageMeta({
     layout: 'auth',
@@ -41,7 +42,10 @@ async function register () {
     const { error, response } = await useSignUp(email.value, password.value, fullName.value, initialsName.value);
     errorRegister.value = error.value;
     if (!error.value) {
-        navigateTo('/login');
+        await navigateTo('/login');
+        toast.success("Đăng ký thành công");
+    } else {
+        toast.error("Đăng ký thất bại");
     }
     loading.value = false;
 }
