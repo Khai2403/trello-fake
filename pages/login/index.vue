@@ -7,14 +7,17 @@
             v-text-field(v-model='password', label='Mật khẩu', :rules='rules', :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'", @click:append-inner='togglePassword', :type="showPassword ? 'text' : 'password'", :readonly='loading')
             v-btn.login-btn.mt-2(:disabled='!form', :loading='loading', type='submit') Đăng nhập
             v-card-text.text-error(v-if='errorLogin') Something went wrong!!!
+            div.edit(contenteditable="true", @input="updateText", v-html="renderedHTML")
         .register.float-right.mt-5
             span.mr-1 Bạn chưa có tài khoản?
             nuxt-link.redirect-btn(to='/register') Đăng ký ngay
 </template>
-
+ 
 <script setup>
 import { useSignIn } from '~~/composable/useFirebase';
 import { toast } from "vue3-toastify";
+import MarkdownIt from 'markdown-it';
+
 definePageMeta({
     layout: 'auth',
 });
@@ -25,6 +28,15 @@ const password = ref(null);
 const loading = ref(false);
 const errorLogin = ref(null);
 const showPassword = ref(false);
+
+// const markdownText = ref("");
+const renderedHTML = ref("");
+const md = new MarkdownIt();
+function updateText (event) {
+    const reversedStr = event.target.innerText.split('').reverse().join('');
+    renderedHTML.value = md.render(reversedStr);
+    console.log(renderedHTML.value);
+}
 
 async function login () {
     loading.value = true;
@@ -73,5 +85,9 @@ function togglePassword () {
             text-decoration: underline;
         }
     }
+}
+
+.edit {
+    height: 100px;
 }
 </style>

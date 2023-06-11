@@ -137,3 +137,7 @@ export const useDelete = async (name, id) => {
   }
   return { error };
 };
+
+const userEmail = admin.auth().getUserByEmail("congkhai@gmail.com");
+
+console.log(userEmail);

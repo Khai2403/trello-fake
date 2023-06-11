@@ -10,7 +10,7 @@ div
                 v-icon(icon='mdi-window-close')
     v-divider(:thickness='1')
     .overflow-y-auto.card-group
-        draggable(:list='work.cards', group='cards', @change='draggableCard($event)', ghost-class='ghost', @add='addDraggableCard(workId, $event)', @remove='removeDraggableCard(workId, $event)')
+        draggable(v-model='work.cards', group='cards', @change='draggableCard($event)', ghost-class='ghost', @add='addDraggableCard(workId, $event)', @remove='removeDraggableCard(workId, $event)')
             .card(v-for='(card, i) in work.cards', :key='i')
                 cardVue(:work-id='workId', :index='i', @is-status='handleStatus($event)')
     .d-flex.justify-center.mt-1.mb-2

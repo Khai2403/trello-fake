@@ -8,7 +8,7 @@
                 v-icon(icon='mdi-chevron-right')
     v-divider(:thickness='2', vertical='', v-if='!hideSidebar', :style="`color: ${isDetail ? 'white' : 'black'};`")
     .d-flex.overflow-x-auto.overflow-y-hidden
-        draggable.work-list(:list='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
+        draggable.work-list(v-model='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
             v-card.work.mr-5.rounded-lg(:draggable='true', v-for='(work, index) in workList', :key='work.id')
                 workVue(:work-id='work.id', :work-index='index', @is-status='handleStatus($event)', @is-delete-status='handleDeletedStatus')
         .mt-4.mr-5
