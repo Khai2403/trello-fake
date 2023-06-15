@@ -32,9 +32,9 @@
 </template>
 
 <script setup>
-import AddBoardModal from '~~/components/AddBoardModal.vue';
+import AddBoardModal from '~~/features/board/AddBoardModal.vue';
 import { useBoards } from '~~/store/useBoard';
-import MainSidebar from "~~/components/MainSidebar.vue";
+import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
 
 definePageMeta({
     layout: 'main',

@@ -24,7 +24,7 @@ export const useBoards = async () => {
     return { ...doc.data(), id: doc.id };
   });
   boardStore.value = boards.value.filter((board) => {
-    return board.userId === user.value.uid;
+    return board.userId.includes(user.value.uid);
   });
 
   onSnapshot(dbCollection, (snap) => {
@@ -178,4 +178,50 @@ export const editWorkTitle = async (workId, workTitle) => {
     error.value = err.message;
   }
   return { error };
+};
+
+export const updateMember = async (boardId, member) => {
+  const error = ref(null);
+  const db = getFirestore();
+  const dbDoc = doc(db, "dashboard", boardId);
+  try {
+    const response = await updateDoc(dbDoc, "userId", member);
+  } catch (err) {
+    error.value = err.message;
+  }
+  return { error };
+};
+
+export const getUserIdByEmail = async (email) => {
+  const error = ref(null);
+  const db = getFirestore();
+  const dbCollection = collection(db, "users");
+  const response = await getDocs(
+    query(dbCollection, where("email", "==", email))
+  );
+  if (response.docs.length === 0) {
+    return null;
+  } else {
+    return response.docs[0].data().userId;
+  }
+};
+export const getInfoByUserId = async (userId) => {
+  const error = ref(null);
+  const db = getFirestore();
+  const dbCollection = collection(db, "users");
+  const response = await getDocs(
+    query(dbCollection, where("userId", "==", userId))
+  );
+  if (response.docs.length === 0) {
+    return null;
+  } else {
+    const email = response.docs[0].data().email;
+    const fullName = response.docs[0].data().fullName;
+    const id = response.docs[0].data().userId;
+    return {
+      id,
+      email,
+      fullName,
+    };
+  }
 };

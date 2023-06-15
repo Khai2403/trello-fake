@@ -20,21 +20,14 @@
             | Bảng
         .d-flex.justify-space-between.mt-2
             p.text-subtitle-1 Các bảng của bạn
-            v-icon.add-board(icon='mdi-plus', @click='addBoard = true')
+            v-icon.add-board(icon='mdi-plus', @click='isAddBoard = true')
         .overflow-y-auto.board-group(v-if='isBoard')
             div(v-for='board in boards', :key='board.id')
-                v-hover(v-slot='{ isHovering, props }')
-                    .board.d-flex.align-center.w-100.mt-2(v-bind='props')
-                        v-btn.board__btn.d-flex.justify-start.align-center(variant='text', :to='`/dashboard/${board.id}`')
-                            .d-flex.align-center.board__title
-                                .board__img(:style="`background-color: ${board?.backgroundColor}; background-image: url('${board?.img ? board?.img : ''}')`")
-                                | {{ board?.title }}
-                        .delete__board__btn.d-flex.align-center.justify-center(v-if='isHovering')
-                            v-icon(icon='mdi-delete', @click.prevent='deleteBoard(board.id)')
+                BoardSidebar(:board="board", :active-board-id="activeBoardId", @is-status="handleStatus")
         .mt-2(v-else='')
             span.text-caption Bạn chưa có bảng nào
-        v-dialog.rounded-lg(v-model='addBoard', :max-width='450', persistent='')
-            AddBoardModal(@close-add-board='addBoard = false', @status='handelStatus')
+        v-dialog.rounded-lg(v-model='isAddBoard', :max-width='450', persistent='')
+            AddBoardModal(@close-add-board='isAddBoard = false', @status='handleStatus')
     v-snackbar(v-model='isSuccess', color='success', :timeout='3000')
         | Success!!!
         template(v-slot:actions='')
@@ -45,23 +38,19 @@
         template(v-slot:actions='')
             v-btn(variant='text', @click='isFalse = false')
                 | Close
-    v-dialog.d-flex.align-center.justify-center(v-model='loadingProgress', persistent='', :max-width='200')
-        .d-flex.justify-center.align-center
-            v-progress-circular(color='success', :size='60', indeterminate='')
 </template>
 
 <script setup>
-import AddBoardModal from './AddBoardModal.vue';
+import AddBoardModal from '~~/features/board/AddBoardModal.vue';
+import BoardSidebar from '~~/features/sidebar/BoardSidebar.vue';
 import { useBoards } from '~~/store/useBoard';
-import { useDelete } from '~~/composable/useFirebase';
 
-const { isDetail, activeWorkId } = defineProps(['isDetail', 'activeWorkId']);
+const { isDetail, activeBoardId } = defineProps(['isDetail', 'activeBoardId']);
 const emit = defineEmits(['hideSidebar'])
 const boards = ref([]);
-const addBoard = ref(false);
+const isAddBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
-const loadingProgress = ref(false);
 const isBoard = ref(false);
 
 const { boardStore } = await useBoards();
@@ -87,25 +76,12 @@ function hideSidebar () {
     emit('hideSidebar');
 };
 
-function handelStatus (event) {
+function handleStatus (event) {
     if (event) {
         isSuccess.value = true;
     } else {
         isFalse.value = true;
     }
-};
-async function deleteBoard (deleteBoardId) {
-    loadingProgress.value = true;
-    const { error } = await useDelete("dashboard", deleteBoardId);
-    if (activeWorkId == deleteBoardId) {
-        navigateTo('/dashboard');
-    }
-    if (!error.value) {
-        isSuccess.value = true;
-    } else {
-        isFalse.value = true;
-    }
-    loadingProgress.value = false;
 };
 </script>
 
@@ -146,37 +122,6 @@ async function deleteBoard (deleteBoardId) {
 
     .board-group {
         max-height: 410px;
-
-        .board:hover {
-            background-color: rgba($color: #ccc, $alpha: 0.2);
-            border-radius: 4px;
-        }
-
-        .board__img {
-            min-height: 20px;
-            min-width: 24px;
-            background-size: cover;
-            margin-right: 8px;
-            border-radius: 4px;
-        }
-
-        .delete__board__btn {
-            flex: 1;
-
-            .v-icon:hover {
-                cursor: pointer;
-                background-color: rgba($color: #ccc, $alpha: 0.6);
-                border-radius: 4px;
-            }
-        }
-
-        .board__btn {
-            width: 85%;
-
-            &:hover {
-                background-color: rgba($color: #ccc, $alpha: 0.2);
-            }
-        }
     }
 
     ::-webkit-scrollbar {

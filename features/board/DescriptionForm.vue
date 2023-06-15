@@ -6,7 +6,7 @@ v-form.description-form(v-model="descriptionForm", @submit.prevent="addDescripti
                 v-btn.ml-2(v-bind='props', append-icon="mdi-chevron-down", flat="")
                     | Aa
             v-list
-                v-list-item(v-for="[name, cls] in classes", :key="name", :value="name")
+                v-list-item(v-for="[name, cls] in classes", :key="name", :value="cls")
                     v-list-item-title(:class="cls") {{ name }}
         v-btn-toggle.ml-2.d-flex.align-center(v-model='textFormat', divided="" ,variant='outlined')
             v-btn.h-75.format-btn(icon='mdi-format-bold')
@@ -24,6 +24,7 @@ v-form.description-form(v-model="descriptionForm", @submit.prevent="addDescripti
 const emit = defineEmits(['cancelDescription'])
 const descriptionForm = ref(null);
 const textFormat = ref(null);
+const content = ref(null);
 const classes = ref([
     ['Heading 1', 'text-h6'],
     ['Heading 2', 'text-subtitle-1'],

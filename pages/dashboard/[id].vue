@@ -1,7 +1,7 @@
 <template lang="pug">
 .dashboard-wrapper(:style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`")
     v-fade-transition(v-if='!hideSidebar')
-        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail', :active-work-id='id')
+        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail', :active-board-id='id')
     .d-flex.flex-column.mr-3(v-if='hideSidebar')
         .sidebar(@click='hideSidebar = false')
             .chevron-right
@@ -22,7 +22,7 @@
                     v-card-text
                         v-text-field(v-model='newWorktitle', :readonly='loading', :disabled='loading', :rules='rules', density='comfortable', label='Tiêu đề', :autofocus='true')
                         .d-flex.float-right.mb-1
-                            v-btn.mr-2(color='error', @click='closeAddWork') Đóng
+                            v-btn.mr-2(color='error', :disabled='loading', @click='closeAddWork') Đóng
                             v-btn(:disabled='!formAddWork', :loading='loading', type='submit', color='success') Tạo
     v-snackbar(v-model='isSuccess', color='success', :timeout='3000')
         | Success!!!
@@ -42,8 +42,8 @@
 <script setup>
 import { useWorkList, useBoards } from '~~/store/useBoard';
 import { useCollection } from '~~/composable/useFirebase';
-import MainSidebar from "~~/components/MainSidebar.vue";
-import workVue from '~~/components/work.vue';
+import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
+import workVue from '~~/features/board/work.vue';
 
 definePageMeta({
     layout: 'main',

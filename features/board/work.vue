@@ -36,7 +36,7 @@ div
 <script setup>
 import { workDetail, updateCard, editWorkTitle } from '~~/store/useBoard';
 import { useDelete } from '~~/composable/useFirebase';
-import cardVue from '~~/components/card.vue';
+import cardVue from '~~/features/board/card.vue';
 
 const { workId, workIndex } = defineProps(['workId', 'workIndex']);
 const emit = defineEmits(['isStatus', 'isDeleteStatus']);

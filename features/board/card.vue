@@ -12,8 +12,8 @@
     v-dialog.d-flex.align-center.justify-center(v-model='loadingProgress', persistent='', :max-width='200')
         .d-flex.justify-center.align-center
             v-progress-circular(color='success', :size='60', indeterminate='')
-    v-dialog.overflow-y-hidden.detail-modal(v-model="showDetailModal",persistent='')
-        v-card.mb-4
+    v-dialog.detail-modal(v-model="showDetailModal",persistent='')
+        v-card.mb-4.overflow-y-hidden
             v-card-title
                 div.d-flex.align-start
                     v-icon.mr-2(icon="mdi-card-text")
@@ -25,7 +25,7 @@
                         v-icon(icon="mdi-window-close")
             v-card-text
                 v-row
-                    v-col(cols="9")
+                    v-col(cols="12", sm="12", md="9", lg="9", xl="9", xxl="9")
                         v-row
                             v-col.d-flex(cols="12")
                                 div
@@ -34,21 +34,24 @@
                                     | Mô tả
                                     div.description.pa-1.mt-2(v-if="!showDescriptionForm", @click="showDescriptionForm=true")
                                         span.ml-2.text-subtitle-2 Thêm mô tả chi tiết hơn...
-                                    DescriptionForm(v-if="showDescriptionForm", @cancel-description="showDescriptionForm=false")
+                                    DescriptionForm(v-if="showDescriptionForm", @cancel-description="showDescriptionForm=false", v-click-outside="closeDescriptionForm")
                         v-row
                             v-col.d-flex(cols="12")
                                 div
                                     v-icon.mr-2(icon="mdi-format-list-text")
                                 div.activity
                                     | Hoạt động
-                    v-col(cols="3")
-                        | Thêm vào thẻ
+                    v-col.d-flex.flex-column(cols="0", sm="0", md="3", lg="3", xl="3", xxl="3")
+                        | Thao tác thẻ
+                        v-btn.mb-2.d-flex.justify-start(variant="solo", color="grey-darken-4", prepend-icon="mdi-account-plus") Thêm thành viên
+                        v-btn.mb-2.d-flex.justify-start(variant="solo", color="grey-darken-4", prepend-icon="mdi-account-minus") Xóa thành viên
+                        v-btn.d-flex.justify-start(variant="solo", color="grey-darken-4", prepend-icon="mdi-tag") Thêm nhãn
 
 </template>
 
 <script setup>
 import { workDetail, updateCard } from '~~/store/useBoard';
-import DescriptionForm from '~~/components/DescriptionForm.vue';
+import DescriptionForm from '~~/features/board/DescriptionForm.vue';
 
 const { workId, index } = defineProps(['workId', 'index']);
 const emit = defineEmits(['isStatus']);
@@ -103,6 +106,9 @@ async function deleteCard () {
     } else {
         emit('isStatus', false);
     }
+};
+function closeDescriptionForm () {
+    showDescriptionForm.value = false;
 }
 </script>
 
@@ -155,5 +161,9 @@ async function deleteCard () {
             border-radius: 6px;
         }
     }
+}
+
+.v-btn {
+    text-transform: none;
 }
 </style>
