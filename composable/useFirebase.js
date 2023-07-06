@@ -118,7 +118,7 @@ export const useCollection = (name) => {
     error.value = null;
     try {
       response.value = await addDoc(collection(db, name), record);
-      return response;
+      return response.value;
     } catch (err) {
       error.value = err.message;
     }

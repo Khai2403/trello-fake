@@ -4,19 +4,19 @@ div
         label.workTitleWrapper.d-flex(v-bind='props', :for='workId')
             input.workTitle(type='text', :id='workId', :value='work.title', @change='onChangeTitle($event)')
             .d-flex.justify-center.align-center.ml-2.mr-2(v-if='!isHovering')
-                v-badge(color='success', :content='numberOfCards')
+                v-badge(color='success', :content='amountOfCard')
                     v-icon(icon='mdi-card-multiple')
             .ml-2.mr-2.delete-btn.d-flex.align-center.justify-center(v-if='isHovering', @click.prevent='deleteWork()')
                 v-icon(icon='mdi-window-close')
     v-divider(:thickness='1')
     .overflow-y-auto.card-group
         draggable(v-model='work.cards', group='cards', @change='draggableCard($event)', ghost-class='ghost', @add='addDraggableCard(workId, $event)', @remove='removeDraggableCard(workId, $event)')
-            .card(v-for='(card, i) in work.cards', :key='i')
-                cardVue(:work-id='workId', :index='i', @is-status='handleStatus($event)')
+            .card(v-for='(cardId, i) in work?.cards', :key='i')
+                cardVue(:work-id='workId', :index='i', :card-id='cardId', :board-id='boardId', @is-status='handleStatus($event)')
     .d-flex.justify-center.mt-1.mb-2
         v-btn.add-card-btn.d-flex.algin-center.justify-center.pa-2.pl-2.rounded-lg(variant='text', @click='showAddCard()')
             v-icon.mr-1(icon='mdi-plus')
-            | Thêm thẻ
+            | Thêm thẻ 
     v-dialog(v-model='isAddCard', persistent='', :max-width='600')
         v-form(v-model='formAddCard', @submit.prevent='addCard')
             v-card.pa-3
@@ -34,13 +34,14 @@ div
 </template>
 
 <script setup>
-import { workDetail, updateCard, editWorkTitle } from '~~/store/useBoard';
-import { useDelete } from '~~/composable/useFirebase';
+import { workDetail, editWorkTitle, updateCard } from '~~/store/useWork';
+import { useCollection, useUser, useDelete } from '~~/composable/useFirebase';
+import { numberOfCards, addActivity } from '~~/store/useCard';
 import cardVue from '~~/features/board/card.vue';
 
-const { workId, workIndex } = defineProps(['workId', 'workIndex']);
-const emit = defineEmits(['isStatus', 'isDeleteStatus']);
-const numberOfCards = ref(null);
+const { workId, workIndex, boardId } = defineProps(['workId', 'workIndex', 'boardId']);
+const emit = defineEmits(['isStatus', 'isDeleteStatus', 'addedDragCard', 'removedDragCard']);
+const amountOfCard = ref(null);
 const formAddCard = ref(null);
 const isAddCard = ref(false);
 const cardsOfWork = ref([]);
@@ -48,16 +49,24 @@ const cardTitle = ref(null);
 const work = ref(null);
 const loading = ref(false);
 const loadingProgress = ref(false);
+const indexDraggableCard = ref(null);
 const rules = [(value) => !!value || "Required!!!"];
 
 const { work: workCurr } = await workDetail(workId);
 work.value = workCurr.value;
-numberOfCards.value = work.value.cards.length;
+const { total } = await numberOfCards(work.value.cards);
+amountOfCard.value = total.value;
 
 watch(workCurr, async () => {
     const { work: workCurrent } = await workDetail(workId);
     work.value = workCurrent.value;
-    numberOfCards.value = work.value.cards.length;
+    const { total } = await numberOfCards(work.value.cards);
+    amountOfCard.value = total.value;
+});
+
+watch(total, async () => {
+    const { total } = await numberOfCards(work.value.cards);
+    amountOfCard.value = total.value;
 });
 
 async function onChangeTitle (event) {
@@ -105,7 +114,7 @@ async function draggableCard (event) {
         }
         cardsOfWork.value[newIndex] = tmp;
         const { error } = await updateCard(workId, cardsOfWork.value);
-    } else {
+    } else if (event.added) {
         return;
     }
 }
@@ -113,10 +122,12 @@ async function draggableCard (event) {
 async function addDraggableCard (addedId, event) {
     const { work: workCurrent } = await workDetail(addedId);
     cardsOfWork.value = workCurrent.value.cards;
+    const addedCardTitle = workCurrent.value.title;
     const newIndex = event.newIndex;
-    const element = event.item.innerText;
-    cardsOfWork.value.splice(newIndex, 0, element);
+    const addedCardId = event.item._underlying_vm_;
+    cardsOfWork.value.splice(newIndex, 0, addedCardId);
     const { error } = await updateCard(addedId, cardsOfWork.value);
+    emit('addedDragCard', addedCardId, addedCardTitle)
     if (error.value) {
         emit('isStatus', false);
     }
@@ -125,9 +136,12 @@ async function addDraggableCard (addedId, event) {
 async function removeDraggableCard (removedId, event) {
     const { work: workCurrent } = await workDetail(removedId);
     cardsOfWork.value = workCurrent.value.cards;
+    const removedCardTitle = workCurrent.value.title;
     const oldIndex = event.oldIndex;
+    const removedCardId = event.item._underlying_vm_;
     cardsOfWork.value.splice(oldIndex, 1);
     const { error } = await updateCard(removedId, cardsOfWork.value);
+    emit('removedDragCard', removedCardId, removedCardTitle);
     if (error.value) {
         emit('isStatus', false);
     }
@@ -135,13 +149,39 @@ async function removeDraggableCard (removedId, event) {
 
 async function addCard () {
     loading.value = true;
+    const { user } = await useUser();
+    const { error: errorCard, addRecord } = useCollection('card');
+    const date = new Date();
+    const createdAt = `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}:${date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()} ngày ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const card = {
+        title: cardTitle.value,
+        userId: [user.value.uid],
+        label: [],
+        description: '',
+        createAt: createdAt,
+        activityLog: [{
+            activity: `đã thêm thẻ vào danh sách ${work.value.title}.`,
+            moveFrom: '',
+            moveTo: '',
+            time: createdAt,
+            userName: user.value.displayName,
+            userEmail: user.value.email,
+            userInitialName: user.value.photoURL
+        }],
+    }
+    const response = await addRecord(card);
+    if (errorCard.value) {
+        emit('isStatus', false);
+        cardTitle.value = "";
+        return;
+    }
     const { work: workCurrent } = await workDetail(workId);
     cardsOfWork.value = workCurrent.value.cards;
-    cardsOfWork.value.push(cardTitle.value);
-    const { error } = await updateCard(workId, cardsOfWork.value);
+    cardsOfWork.value.push(response.id);
+    const { error: errorWork } = await updateCard(workId, cardsOfWork.value);
     isAddCard.value = false;
     loading.value = false;
-    if (!error.value) {
+    if (!errorWork.value) {
         emit('isStatus', true)
     } else {
         emit('isStatus', false);
@@ -153,8 +193,10 @@ function closeAddCard () {
     isAddCard.value = false;
     cardTitle.value = "";
 };
-function handleStatus (event) {
+async function handleStatus (event) {
     if (event) {
+        const { total } = await numberOfCards(work.value.cards);
+        amountOfCard.value = total.value;
         emit('isStatus', true)
     } else {
         emit('isStatus', false)

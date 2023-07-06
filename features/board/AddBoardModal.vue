@@ -23,8 +23,7 @@ v-container
 </template>
 
 <script setup>
-import { useCollection, useStorage } from '~~/composable/useFirebase';
-import { useUser } from '~~/composable/useFirebase'
+import { useCollection, useStorage, useUser } from '~~/composable/useFirebase';
 
 const emit = defineEmits(['closeAddBoard', 'status']);
 const rules = [(value) => !!value || "Required!!!"]

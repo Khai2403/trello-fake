@@ -9,7 +9,7 @@
                 | Đăng Nhập
         nuxt-link.text-decoration-none(to='/register')
             v-btn
-                | Đăng ký
+                | Đăng Ký
 </template>
 
 <script setup>
@@ -37,5 +37,9 @@ import logo from "../assets/images/logo.gif"
         display: flex;
         justify-content: space-between;
     }
+}
+
+.v-btn {
+    text-transform: none;
 }
 </style>

@@ -18,9 +18,9 @@ v-container
 </template>
 
 <script setup>
-import { getInfoByUserId, updateMember } from '~~/store/useBoard';
+import { updateBoardMember } from '~~/store/useBoard';
+import { getInfoByUserId } from '~~/store/useUser';
 import { useUser } from "~~/composable/useFirebase";
-import { list } from 'firebase/storage';
 
 const { board } = defineProps(['board']);
 const emit = defineEmits(['closeDeleteMember', 'status']);
@@ -49,7 +49,7 @@ async function deleteMember () {
     const listDeletedMembers = board.userId.filter((member) => {
         return !deletedMembers.value.includes(member)
     })
-    const { error } = await updateMember(board.id, listDeletedMembers);
+    const { error } = await updateBoardMember(board.id, listDeletedMembers);
     if (!error.value) {
         emit('status', true);
     } else {

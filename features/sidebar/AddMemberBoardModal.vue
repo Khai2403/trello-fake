@@ -14,7 +14,8 @@ v-container
 </template>
 
 <script setup>
-import { getUserIdByEmail, updateMember } from '~~/store/useBoard';
+import { updateBoardMember } from '~~/store/useBoard';
+import { getUserIdByEmail } from '~~/store/useUser';
 import { useUser } from "~~/composable/useFirebase";
 import { toast } from "vue3-toastify";
 
@@ -48,7 +49,7 @@ async function addMember () {
     } else {
         listMember.push(addMemberId);
     }
-    const { error } = await updateMember(board.id, listMember);
+    const { error } = await updateBoardMember(board.id, listMember);
     if (!error.value) {
         emit('status', true);
     } else {
