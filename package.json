@@ -15,9 +15,11 @@
     "pug-plain-loader": "^1.1.0"
   },
   "dependencies": {
+    "@vavt/md-editor-extension": "^3.0.0",
     "firebase": "^9.20.0",
     "firebase-tools": "^11.28.0",
     "markdown-it": "^13.0.1",
+    "md-editor-v3": "^4.2.1",
     "sass": "^1.60.0",
     "vue-draggable-next": "^2.1.1",
     "vue-markdown": "^2.2.4",
