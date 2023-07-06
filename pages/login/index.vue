@@ -11,10 +11,12 @@
             span.mr-1 Bạn chưa có tài khoản?
             nuxt-link.redirect-btn(to='/register') Đăng ký ngay
 </template>
-
+ 
 <script setup>
 import { useSignIn } from '~~/composable/useFirebase';
 import { toast } from "vue3-toastify";
+// import MarkdownIt from 'markdown-it';
+
 definePageMeta({
     layout: 'auth',
 });
@@ -25,6 +27,15 @@ const password = ref(null);
 const loading = ref(false);
 const errorLogin = ref(null);
 const showPassword = ref(false);
+
+// const markdownText = ref("");
+// const renderedHTML = ref("");
+// const md = new MarkdownIt();
+// function updateText (event) {
+//     const reversedStr = event.target.innerText.split('').reverse().join('');
+//     renderedHTML.value = md.render(reversedStr);
+//     console.log(renderedHTML.value);
+// }
 
 async function login () {
     loading.value = true;
@@ -73,5 +84,9 @@ function togglePassword () {
             text-decoration: underline;
         }
     }
+}
+
+.edit {
+    height: 100px;
 }
 </style>

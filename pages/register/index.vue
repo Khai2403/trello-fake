@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { useSignUp } from "~~/composable/useFirebase";
+import { useSignUp, useCollection } from "~~/composable/useFirebase";
 import { toast } from "vue3-toastify";
 
 definePageMeta({
@@ -34,6 +34,7 @@ const password = ref(null);
 const loading = ref(false);
 const errorRegister = ref(null);
 const showPassword = ref(false);
+const { error: errorRecord, addRecord } = useCollection('users');
 
 async function register () {
     loading.value = true;
@@ -46,6 +47,20 @@ async function register () {
         toast.success("Đăng ký thành công");
     } else {
         toast.error("Đăng ký thất bại");
+        loading.value = false;
+        return;
+    }
+    const user = {
+        email: email.value,
+        fullName: fullName.value,
+        initialsName: initialsName.value,
+        id: response.value.user.uid
+    };
+    await addRecord(user);
+    if (errorRecord.value) {
+        toast.error("Đăng ký thất bại");
+        errorRegister.value = errorRecord.value;
+        return;
     }
     loading.value = false;
 }

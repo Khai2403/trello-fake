@@ -1,16 +1,16 @@
 <template lang="pug">
 .dashboard-wrapper(:style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`")
     v-fade-transition(v-if='!hideSidebar')
-        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail', :active-work-id='id')
+        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail', :active-board-id='id')
     .d-flex.flex-column.mr-3(v-if='hideSidebar')
         .sidebar(@click='hideSidebar = false')
             .chevron-right
                 v-icon(icon='mdi-chevron-right')
     v-divider(:thickness='2', vertical='', v-if='!hideSidebar', :style="`color: ${isDetail ? 'white' : 'black'};`")
     .d-flex.overflow-x-auto.overflow-y-hidden
-        draggable.work-list(:list='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
+        draggable.work-list(v-model='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
             v-card.work.mr-5.rounded-lg(:draggable='true', v-for='(work, index) in workList', :key='work.id')
-                workVue(:work-id='work.id', :work-index='index', @is-status='handleStatus($event)', @is-delete-status='handleDeletedStatus')
+                workVue(:work-id='work.id', :board-id='id', :work-index='index', @is-status='handleStatus($event)', @is-delete-status='handleDeletedStatus', @added-drag-card = 'handelAddDragCard', @removed-drag-card = 'handelRemoveDragCard')
         .mt-4.mr-5
             div(v-if='!isAddWork')
                 v-btn.add-work-btn.d-flex.align-center.rounded-lg.pa-6(min-width='300', @click='showAddWork')
@@ -22,7 +22,7 @@
                     v-card-text
                         v-text-field(v-model='newWorktitle', :readonly='loading', :disabled='loading', :rules='rules', density='comfortable', label='Tiêu đề', :autofocus='true')
                         .d-flex.float-right.mb-1
-                            v-btn.mr-2(color='error', @click='closeAddWork') Đóng
+                            v-btn.mr-2(color='error', :disabled='loading', @click='closeAddWork') Đóng
                             v-btn(:disabled='!formAddWork', :loading='loading', type='submit', color='success') Tạo
     v-snackbar(v-model='isSuccess', color='success', :timeout='3000')
         | Success!!!
@@ -40,10 +40,12 @@
 </template>
 
 <script setup>
-import { useWorkList, useBoards } from '~~/store/useBoard';
-import { useCollection } from '~~/composable/useFirebase';
-import MainSidebar from "~~/components/MainSidebar.vue";
-import workVue from '~~/components/work.vue';
+import { useBoards } from '~~/store/useBoard';
+import { useWorkList } from '~~/store/useWork';
+import { addActivity } from '~~/store/useCard';
+import { useCollection, useUser } from '~~/composable/useFirebase';
+import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
+import workVue from '~~/features/board/work.vue';
 
 definePageMeta({
     layout: 'main',
@@ -61,7 +63,12 @@ const isAddWork = ref(false);
 const newWorktitle = ref(null);
 const isSuccess = ref(false);
 const isFalse = ref(false);
+const addedCardId = ref(null);
+const removedCardId = ref(null);
+const addedCardTitle = ref(null);
+const removedCardTitle = ref(null);
 const rules = [(value) => !!value || "Required!!!"];
+const { user } = await useUser();
 
 const { workListStore, updateWorkRank, updateDeletedWorkRank } = await useWorkList(id);
 workList.value = workListStore.value;
@@ -71,6 +78,30 @@ watch(workListStore, async () => {
         workList.value = workListCurrent.value;
     } else {
         workList.value = [];
+    }
+});
+
+watchEffect(async () => {
+    if (addedCardId.value === removedCardId.value && addedCardTitle.value && removedCardTitle.value) {
+        const date = new Date();
+        const createdAt = `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}:${date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()} ngày ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        const actitvity = {
+            activity: 'đã di chuyển thẻ này từ',
+            moveFrom: removedCardTitle.value,
+            moveTo: addedCardTitle.value,
+            time: createdAt,
+            userName: user.value.displayName,
+            userEmail: user.value.email,
+            userInitialName: user.value.photoURL
+        }
+        const { error } = await addActivity(addedCardId.value, actitvity);
+        if (error.value) {
+            isFalse.value = true;
+        }
+        addedCardId.value = null;
+        removedCardId.value = null;
+        addedCardTitle.value = null;
+        removedCardTitle.value = null;
     }
 });
 
@@ -114,6 +145,15 @@ function showAddWork () {
 function closeAddWork () {
     isAddWork.value = false;
     newWorktitle.value = '';
+}
+function handelAddDragCard (event1, event2) {
+    addedCardId.value = event1;
+    addedCardTitle.value = event2;
+}
+
+function handelRemoveDragCard (event1, event2) {
+    removedCardId.value = event1;
+    removedCardTitle.value = event2;
 }
 
 function handleStatus (event) {
