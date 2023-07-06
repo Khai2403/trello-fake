@@ -49,10 +49,10 @@ v-card.mb-4.overflow-y-auto
                             v-icon.mr-2(icon="mdi-text-box")
                         div.description-wrapper
                             | Mô tả
-                            div.addDescription.pa-1.mt-2(v-if="!showDescriptionForm && !card?.description?.content", @click="showDescriptionForm=true")
+                            div.addDescription.pa-1.mt-2(v-if="!showDescriptionForm && !card?.description", @click="showDescriptionForm=true")
                                 span.ml-2.text-subtitle-2 Thêm mô tả chi tiết hơn...
-                            p.description(v-if="!showDescriptionForm", :class="`${card?.description?.fontSize} ${card?.description?.fontEmphasis}`", @click="showDescriptionForm = true") {{ card?.description?.content }}
-                            DescriptionForm(v-if="showDescriptionForm", :description='card?.description', @cancel-description="showDescriptionForm=false")
+                            markdownPreview.description(v-if="!showDescriptionForm", @click="showDescriptionForm = true", :modelValue="card?.description")
+                            DescriptionForm(v-if="showDescriptionForm", language="en-US", :description='card?.description', :card-id='cardId', @cancel-description="showDescriptionForm=false", @status='handleStatus')
                 v-row
                     v-col.mb-3(cols="12")
                         div.d-flex
@@ -272,8 +272,6 @@ function handleAddLabel () {
         &:hover {
             background-color: #E0E0E0;
             border-radius: 6px;
-            padding-left: 8px;
-            padding-right: 8px;
         }
     }
 }
