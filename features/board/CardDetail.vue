@@ -51,7 +51,7 @@ v-card.mb-4.overflow-y-auto
                             | Mô tả
                             div.addDescription.pa-1.mt-2(v-if="!showDescriptionForm && !card?.description", @click="showDescriptionForm=true")
                                 span.ml-2.text-subtitle-2 Thêm mô tả chi tiết hơn...
-                            markdownPreview.description(v-if="!showDescriptionForm", @click="showDescriptionForm = true", :modelValue="card?.description")
+                            markdownPreview.description(v-if="!showDescriptionForm && card?.description", @click="showDescriptionForm = true", :modelValue="card?.description")
                             DescriptionForm(v-if="showDescriptionForm", language="en-US", :description='card?.description', :card-id='cardId', @cancel-description="showDescriptionForm=false", @status='handleStatus')
                 v-row
                     v-col.mb-3(cols="12")
