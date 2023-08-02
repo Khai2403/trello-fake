@@ -4,23 +4,40 @@
         .introduction
             .introduction__title
                 v-row 
-                    v-col(cols="6")
+                    v-col(cols="6", md="6", sm="12", xs="12")
                         p.font-weight-thin.title THÔNG TIN CƠ BẢN VỀ TRELLO
                         p.mt-1.subtitle Đỉnh cao về năng suất 
                         p.mt-2.text Đơn giản, linh hoạt và mạnh mẽ. Chỉ với bảng, danh sách và thẻ, bạn sẽ biết rõ ai đang làm gì và những việc cần làm.
-            .introduction__content.mt-5
+            .introduction__content--wider--md.mt-5
                 v-row 
-                    v-col(cols="4")
+                    v-col(cols="0",md="4", lg="4", xl="4", xxl="4")
                         v-card.pa-3.card(v-for='(optionCard, index) in optionsCard' ,@click='selectIntro(index)', :style="`border-left: ${selectedCard[index] ? '6px solid rgb(0, 199, 229);' : ''}`")
                             p.font-weight-bold {{ optionCard?.title }}
                             span.text-subtitle-2 {{ optionCard?.subtitle }}
-                    v-col(cols="8")
+                    v-col(cols="12",md="8", lg="8", xl="8", xxl="8")
                         v-window(v-model='step')
                             v-window-item(v-for='(optionImg, index) in optionsImg')
-                                div.d-flex.align-center.justify-center.w-100
+                                div.introduction__content__img.d-flex.align-center.justify-center.w-100
                                     v-img.bg-white(width="100%", :aspect-ratio="16/9", :src='optionImg',:lazy-src="optionImg", cover="", alt="Hình ảnh")
+            .introduction__content--smaller--md.mt-5
+                v-card.overflow-hidden.rounded-lg(flat='', rounded='0')
+                    v-window(v-model='step')
+                        v-window-item(v-for='n in lengthIntro', :key='`card-${n}`', :value='n-1')
+                            v-card.justify-center.align-center(height='auto')
+                                div.introduction__content__img.d-flex.align-center.justify-center.w-100
+                                    v-img.rounded-lg.bg-white(width="100%", :aspect-ratio="16/9", :src='optionsImg[n-1]',:lazy-src="optionsImg[n-1]", cover="", alt="Hình ảnh")
+                                v-divider(:thickness='1', vertical='', color="transparent")
+                                v-card.mb-3.pa-3.card
+                                    p.font-weight-bold {{ optionsCard[n-1]?.title }}
+                                    span.text-subtitle-2 {{ optionsCard[n-1]?.subtitle }}
+                    v-card-actions.justify-space-between
+                        v-btn(variant='plain', icon='mdi-chevron-left', @click='prevIntro')
+                        v-item-group.text-center(v-model='step', mandatory='')
+                            v-item(v-for='n in lengthIntro', :key='`btn-${n}`', :value='n-1')
+                                v-btn(:variant="selectedCard[n-1] ? 'outlined' : 'text'", icon='mdi-record', @click='selectIntro(n-1)')
+                        v-btn(variant='plain', icon='mdi-chevron-right', @click='nextIntro')
         .application.mt-4.mb-12
-            .application__title 
+            .application__title
                 p.font-weight-thin.title TRELLO TRONG THỰC TIỄN
                 p.subtitle Quy trình làm việc cho mọi dự án, bất kể nhỏ to
             .application__content.mt-2
@@ -34,7 +51,7 @@
                                 p.text-h6.font-weight-bold {{ option.title }}
                                 p.mb-3.text-subtitle-2 {{ option.subtitle }}
                 v-row.mt-5.text
-                    v-col(cols="9")
+                    v-col(cols="9", md="9", sm="12", xs="12")
                         p.text-h6 Không cần bắt đầu từ đầu. Bạn có thể nhanh chóng bắt đầu quy trình làm việc với sổ chiến lược đã được chứng minh hiệu quả dành cho các đội nhóm khác nhau. Hãy tùy chỉnh thành sổ chiến lược của riêng bạn.
     .sub-footer-wrapper
         .sub-footer
@@ -53,6 +70,25 @@ import workImg from '~~/assets/images/work.jpg';
 import cardImg from '~~/assets/images/card.png';
 const step = ref(0);
 const selectedCard = ref([true, false, false]);
+const lengthIntro = ref(3);
+function nextIntro () {
+    step.value = step.value + 1 >= lengthIntro.value ? 0 : step.value + 1;
+    selectedCard.value[step.value] = true;
+    for (let i = 0; i < selectedCard.value.length; i++) {
+        if (i != step.value) {
+            selectedCard.value[i] = false;
+        }
+    }
+}
+function prevIntro () {
+    step.value = step.value - 1 < 0 ? lengthIntro.value - 1 : step.value - 1;
+    selectedCard.value[step.value] = true;
+    for (let i = 0; i < selectedCard.value.length; i++) {
+        if (i != step.value) {
+            selectedCard.value[i] = false;
+        }
+    }
+}
 const optionsCard = [
     {
         title: 'Các bảng',
@@ -108,11 +144,12 @@ const optionsProcedure = [
 ]
 function selectIntro (index) {
     selectedCard.value[index] = true;
-    for (var i = 0; i < selectedCard.value.length; i++) {
+    for (let i = 0; i < selectedCard.value.length; i++) {
         if (i != index) {
             selectedCard.value[i] = false;
         }
     }
+    step.value = index;
     step.value = index;
 }
 </script>
@@ -135,13 +172,20 @@ function selectIntro (index) {
                 }
             }
 
-            .introduction__content {
+            .introduction__content--wider--md {
                 .card {
                     cursor: pointer;
                 }
 
                 .card+.card {
                     margin-top: 12px;
+                }
+            }
+
+            .introduction__content--smaller--md {
+                .card {
+                    cursor: pointer;
+                    border-left: 6px solid rgb(0, 199, 229);
                 }
             }
         }
@@ -215,5 +259,25 @@ function selectIntro (index) {
 
 .v-btn {
     text-transform: none;
+}
+
+@media screen and (max-width: 960px) {
+    .introduction__content--wider--md {
+        display: none;
+    }
+
+    .introduction__content--smaller--md {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 961px) {
+    .introduction__content--wider--md {
+        display: block;
+    }
+
+    .introduction__content--smaller--md {
+        display: none;
+    }
 }
 </style>
