@@ -2,12 +2,12 @@
 HomeHeader
 .space
 slot
-MainFooter
+Footer
 </template>
 
 <script setup>
 import HomeHeader from "~~/components/HomeHeader.vue";
-import MainFooter from "~~/components/MainFooter.vue";
+import Footer from "~~/components/Footer.vue";
 </script>
 
 <style lang="scss" scoped>
