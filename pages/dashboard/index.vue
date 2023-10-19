@@ -1,5 +1,5 @@
 <template lang="pug">
-.dashboard-wrapper
+.dashboard-wrapper.d-flex
     MainSidebar
     .board-list
         v-row
@@ -27,20 +27,19 @@
 
 <script setup>
 import AddBoardModal from '~~/features/board/AddBoardModal.vue';
-import { useBoards } from '~~/store/useBoard';
 import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
+import { useBoards } from '~~/store/useBoard';
 
 definePageMeta({
     layout: 'main',
     middleware: 'auth',
 });
 
-const isDetail = ref(false);
-const hideSidebar = ref(false);
 const boards = ref([]);
 const addBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
+const hideSidebar = ref(false);
 
 const { boardStore } = await useBoards();
 
@@ -58,15 +57,13 @@ function handelStatus (event) {
     }
 };
 function handelHideSidebar () {
-    hideSidebar.value = true;
+  hideSidebar.value = true;
 }
 </script>
 
 <style lang="scss" scoped>
 .dashboard-wrapper {
     height: calc(100vh - 64px);
-    display: flex;
-
     ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
@@ -81,36 +78,6 @@ function handelHideSidebar () {
         background-color: #888;
         border: 2px solid #fff;
         border-radius: 10px;
-    }
-
-    .sidebar {
-        height: 100%;
-        width: 16px;
-        background-color: rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        animation: appear .3s ease-in-out;
-
-        .chevron-right {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            margin: 16px 0 0 4px;
-            background-color: rgba(0, 0, 0, 0.1);
-
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.2);
-
-            }
-        }
-
-        &:hover,
-        &:hover .chevron-right {
-            background-color: rgba(0, 0, 0, 0.2);
-
-        }
     }
 
     .board-list {

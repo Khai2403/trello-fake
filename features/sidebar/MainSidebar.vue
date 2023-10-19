@@ -88,7 +88,7 @@ function handleStatus (event) {
     } else {
         isFalse.value = true;
     }
-};
+}
 </script>
 
 <style lang="scss" scoped>

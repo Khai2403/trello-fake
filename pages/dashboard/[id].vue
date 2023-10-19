@@ -1,5 +1,5 @@
 <template lang="pug">
-.dashboard-wrapper(:style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`")
+.dashboard-wrapper.d-flex(:style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`")
     MainSidebar(:active-board-id='id')
     .d-flex.overflow-x-auto.overflow-y-hidden
         draggable.work-list(v-model='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
@@ -38,8 +38,8 @@ import { useBoards } from '~~/store/useBoard';
 import { useWorkList } from '~~/store/useWork';
 import { addActivity } from '~~/store/useCard';
 import { useCollection, useUser } from '~~/composable/useFirebase';
-import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
 import workVue from '~~/features/board/work.vue';
+import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
 
 definePageMeta({
     layout: 'main',
@@ -47,7 +47,6 @@ definePageMeta({
 });
 
 const workList = ref([]);          //nên để là mảng
-const isDetail = ref(true);
 const { id } = useRoute().params;
 const formAddWork = ref(null);
 const loading = ref(false);
@@ -166,7 +165,6 @@ async function handleDeletedStatus (event, workRank) {
 <style lang="scss" scoped>
 .dashboard-wrapper {
     height: calc(100vh - 64px);
-    display: flex;
 
     ::-webkit-scrollbar {
         height: 15px;
@@ -180,36 +178,6 @@ async function handleDeletedStatus (event, workRank) {
     ::-webkit-scrollbar-thumb {
         background-color: #888;
         border-radius: 10px;
-    }
-
-    .sidebar {
-        height: 100%;
-        width: 16px;
-        background-color: rgba(0, 0, 0, 0.4);
-        cursor: pointer;
-        animation: left-2-right .3s ease-in-out;
-
-        .chevron-right {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            margin: 16px 0 0 4px;
-            background-color: rgba(0, 0, 0, 0.4);
-            color: white;
-
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.6);
-            }
-        }
-
-        &:hover,
-        &:hover .chevron-right {
-            background-color: rgba(0, 0, 0, 0.6);
-
-        }
     }
 
     .work-list {
@@ -250,16 +218,6 @@ async function handleDeletedStatus (event, workRank) {
 
 .v-btn {
     text-transform: none;
-}
-
-@keyframes left-2-right {
-    from {
-        transform: translateX(-100%);
-    }
-
-    to {
-        transform: translateX(0);
-    }
 }
 
 @keyframes fade {

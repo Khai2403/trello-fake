@@ -2,6 +2,7 @@ node_modules
 *.log*
 .idea
 .nuxt
+.idea
 .nitro
 .cache
 .output
