@@ -30,15 +30,15 @@ function closeAddMemberModal () {
     emit('closeAddMember');
 }
 async function addMember () {
-    const addMemberId = await getUserIdByEmail(emailMember.value);
+    const addMemberId = await getUserIdByEmail(emailMember?.value);
     if (addMemberId === null) {
         toast.error("Email không tổn tại");
         emit('closeAddMember');
         return;
     }
     const { user } = await useUser();
-    const listMember = board.userId;
-    if (addMemberId === user.value.uid) {
+    const listMember = board?.userId;
+    if (addMemberId === user?.value?.uid) {
         toast.error("Bạn không thể thêm chính bạn!!!");
         emit('closeAddMember');
         return;

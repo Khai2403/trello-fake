@@ -10,7 +10,7 @@ v-container
             v-btn.w-100(v-if='!chooseColor', @click='chooseColor = true', depressed='', color='#ddd', :disabled='loading')
                 | Chọn màu cho bảng
             v-color-picker(v-model='backgroundColor', v-if='chooseColor', width='386', dot-size='25', hide-inputs='', swatches-max-height='100', canvas-height='100', :disabled='loading')
-            label.d-flex.align-center.justify-center.flex-column.mt-3.upload-block(for='boardImg', 
+            label.d-flex.align-center.justify-center.flex-column.mt-3.upload-block(for='boardImg',
             :style="`background-image: url('${boardImgUrl ? boardImgUrl : ''}');height:150px;background-size: cover;background-position: center;`")
                 template(v-if='!fileToUploProgress && !boardImgUrl')
                     v-icon(icon='mdi-camera')
@@ -64,7 +64,7 @@ async function addBoard () {
     const createdAt = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
     const board = {
         backgroundColor: backgroundColor.value,
-        userId: user.value.uid,
+        userId: [user.value.uid],
         img: boardImgUrl.value ? boardImgUrl.value : '',
         title: boardTitle.value,
         createdAt: createdAt
