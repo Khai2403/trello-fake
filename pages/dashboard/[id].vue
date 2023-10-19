@@ -48,7 +48,6 @@ definePageMeta({
 
 const workList = ref([]);          //nên để là mảng
 const { id } = useRoute().params;
-const hideSidebar = ref(false);
 const formAddWork = ref(null);
 const loading = ref(false);
 const loadingProgress = ref(false);
@@ -100,10 +99,6 @@ watchEffect(async () => {
 
 const { boardDetail } = await useBoards();
 const { board } = boardDetail(id);
-
-function handelHideSidebar () {
-    hideSidebar.value = true;
-}
 
 async function draggableWork (event) {
     const { error } = await updateWorkRank(event.moved.oldIndex, event.moved.newIndex);

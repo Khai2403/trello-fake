@@ -13,7 +13,7 @@ v-fade-transition(v-if='!hideSidebar')
                 .text-subtitle-2
                     | Miễn phí
         v-col(cols='3')
-            v-btn(icon='mdi-chevron-left', flat='', @click='handleShowSidebar', color='transparent')
+            v-btn(icon='mdi-chevron-left', flat='', @click='handleHideSidebar', color='transparent')
     v-divider(:thickness='2')
     .ml-3.mr-3
         v-btn.w-100.d-flex.justify-start.mt-2(variant='text', to='/dashboard')
@@ -57,7 +57,10 @@ const isAddBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
 const isBoard = ref(false);
-const hideSidebar = ref(false);
+import {showSidebar} from "~/store/showSidebar";
+
+const {isShowSidebar, setShowSidebar}= showSidebar();
+const hideSidebar = ref(!isShowSidebar);
 
 const { boardStore } = await useBoards();
 
@@ -70,8 +73,13 @@ watch(boardStore, async () => {
     isBoard.value = boardStore.value?.length !== 0;
 });
 
-function handleShowSidebar () {
-  hideSidebar.value = !hideSidebar.value;
+async function handleShowSidebar () {
+  hideSidebar.value = false;
+  await setShowSidebar(true);
+}
+async function handleHideSidebar () {
+  hideSidebar.value = true;
+  await setShowSidebar(false);
 }
 
 function handleStatus (event) {
