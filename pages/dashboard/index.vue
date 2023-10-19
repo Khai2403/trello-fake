@@ -39,7 +39,6 @@ const boards = ref([]);
 const addBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
-const hideSidebar = ref(false);
 
 const { boardStore } = await useBoards();
 
@@ -56,9 +55,6 @@ function handelStatus (event) {
         isFalse.value = true;
     }
 };
-function handelHideSidebar () {
-  hideSidebar.value = true;
-}
 </script>
 
 <style lang="scss" scoped>
@@ -81,7 +77,7 @@ function handelHideSidebar () {
     }
 
     .board-list {
-        height: 100vh;
+        height: 100%;
         overflow: auto;
         padding: 16px;
         flex: 1;
