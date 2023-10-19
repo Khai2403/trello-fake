@@ -11,7 +11,7 @@
             span.mr-1 Bạn chưa có tài khoản?
             nuxt-link.redirect-btn(to='/register') Đăng ký ngay
 </template>
- 
+
 <script setup>
 import { useSignIn } from '~~/composable/useFirebase';
 import { toast } from "vue3-toastify";
@@ -20,6 +20,9 @@ import { toast } from "vue3-toastify";
 definePageMeta({
     layout: 'auth',
 });
+useHead({
+  title: 'Đăng nhập | Trello'
+})
 const rules = [(value) => !!value || "Required!!!"]
 const form = ref(null);
 const email = ref(null);

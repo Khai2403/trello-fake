@@ -46,6 +46,10 @@ definePageMeta({
     middleware: 'auth',
 });
 
+// useHead({
+//   title: `${}`
+// })
+
 const workList = ref([]);          //nên để là mảng
 const { id } = useRoute().params;
 const formAddWork = ref(null);
@@ -100,6 +104,9 @@ watchEffect(async () => {
 const { boardDetail } = await useBoards();
 const { board } = boardDetail(id);
 
+useHead({
+  title: `${board.value.title} | Trello`
+})
 async function draggableWork (event) {
     const { error } = await updateWorkRank(event.moved.oldIndex, event.moved.newIndex);
 }

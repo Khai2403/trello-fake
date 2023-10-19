@@ -34,6 +34,9 @@ definePageMeta({
     layout: 'main',
     middleware: 'auth',
 });
+useHead({
+  title: "Trello Không gian làm việc"
+})
 
 const boards = ref([]);
 const addBoard = ref(false);

@@ -24,6 +24,9 @@ import { toast } from "vue3-toastify";
 definePageMeta({
     layout: 'auth',
 });
+useHead({
+  title: 'Đăng ký | Trello',
+})
 const rules = [(value) => !!value || "Required!!!"]
 
 const form = ref(null);
