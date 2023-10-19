@@ -8,11 +8,15 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
   vite: {
-    define: { 
+    define: {
       'process.env.DEBUG': false,
     },
   },
-  
+
+  modules: [
+    '@pinia/nuxt',
+  ],
+
   runtimeConfig: {
     // The private keys which are only available server-side
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -31,8 +35,9 @@ export default defineNuxtConfig({
         },
         {
           charset: 'utf8',
-        }
-      ]
+        },
+      ],
+      link: [{rel: 'icon', type: 'image/png', href: '/logo-head.png'}]
     }
   },
 })

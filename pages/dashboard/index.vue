@@ -1,12 +1,6 @@
 <template lang="pug">
 .dashboard-wrapper
-    v-fade-transition(v-if='!hideSidebar')
-        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail')
-    .d-flex.flex-column.mr-3(v-if='hideSidebar')
-        .sidebar(@click='hideSidebar = false')
-            .chevron-right
-                v-icon(icon='mdi-chevron-right')
-    v-divider(:thickness='2', vertical='', v-if='!hideSidebar')
+    MainSidebar
     .board-list
         v-row
             v-col.card(cols='12', sm='6', md='4', lg='3', xl='3', xxl='2', v-for='board in boards', :key='board.id')

@@ -1,12 +1,6 @@
 <template lang="pug">
 .dashboard-wrapper(:style="`background-image: url('${board?.img}');background-color: ${board?.backgroundColor}; background-size: cover; background-position: center;`")
-    v-fade-transition(v-if='!hideSidebar')
-        MainSidebar(v-show='!hideSidebar', @hide-sidebar='handelHideSidebar', :is-detail='isDetail', :active-board-id='id')
-    .d-flex.flex-column.mr-3(v-if='hideSidebar')
-        .sidebar(@click='hideSidebar = false')
-            .chevron-right
-                v-icon(icon='mdi-chevron-right')
-    v-divider(:thickness='2', vertical='', v-if='!hideSidebar', :style="`color: ${isDetail ? 'white' : 'black'};`")
+    MainSidebar(:active-board-id='id')
     .d-flex.overflow-x-auto.overflow-y-hidden
         draggable.work-list(v-model='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
             v-card.work.mr-5.rounded-lg(:draggable='true', v-for='(work, index) in workList', :key='work.id')
@@ -55,7 +49,6 @@ definePageMeta({
 const workList = ref([]);          //nên để là mảng
 const isDetail = ref(true);
 const { id } = useRoute().params;
-const hideSidebar = ref(false);
 const formAddWork = ref(null);
 const loading = ref(false);
 const loadingProgress = ref(false);
@@ -107,10 +100,6 @@ watchEffect(async () => {
 
 const { boardDetail } = await useBoards();
 const { board } = boardDetail(id);
-
-function handelHideSidebar () {
-    hideSidebar.value = true;
-}
 
 async function draggableWork (event) {
     const { error } = await updateWorkRank(event.moved.oldIndex, event.moved.newIndex);

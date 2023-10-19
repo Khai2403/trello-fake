@@ -1,18 +1,19 @@
 <template lang="pug">
-.dashboard(:style="`color: ${isDetail ? 'white' : 'black'};background-color:${isDetail ? 'rgba(0, 0, 0, 0.6)' : 'white'};`")
+v-fade-transition(v-if='!hideSidebar')
+  .dashboard(v-show='!hideSidebar', :style="`color: ${activeBoardId ? 'white' : 'black'};background-color:${activeBoardId ? 'rgba(0, 0, 0, 0.6)' : 'white'};`")
     v-row.dashboard__title(no-gutters='')
         v-col.dashboard__title__logo(cols='2')
             .w-100
                 nuxt-link.text-white.text-decoration-none.d-flex.justify-center(to='/dashboard')
                     | T
         v-col.ml-2(cols='8')
-            nuxt-link.text-decoration-none(to='/dashboard', :style="`color: ${isDetail ? 'white' : 'black'};`")
+            nuxt-link.text-decoration-none(to='/dashboard', :style="`color: ${activeBoardId ? 'white' : 'black'};`")
                 .font-weight-bold.text-subtitle-1
                     | Trello Không gian làm việc
                 .text-subtitle-2
                     | Miễn phí
         v-col(cols='3')
-            v-btn(icon='mdi-chevron-left', flat='', @click='hideSidebar', color='transparent')
+            v-btn(icon='mdi-chevron-left', flat='', @click='handleHideSidebar', color='transparent')
     v-divider(:thickness='2')
     .ml-3.mr-3
         v-btn.w-100.d-flex.justify-start.mt-2(variant='text', to='/dashboard')
@@ -38,6 +39,11 @@
         template(v-slot:actions='')
             v-btn(variant='text', @click='isFalse = false')
                 | Close
+.d-flex.flex-column.mr-3(v-if='hideSidebar')
+  .sidebar(@click='handleShowSidebar')
+    .chevron-right
+      v-icon(icon='mdi-chevron-right')
+v-divider(:thickness='2', vertical='', v-if='!hideSidebar')
 </template>
 
 <script setup>
@@ -45,36 +51,36 @@ import AddBoardModal from '~~/features/board/AddBoardModal.vue';
 import BoardSidebar from '~~/features/sidebar/BoardSidebar.vue';
 import { useBoards } from '~~/store/useBoard';
 
-const { isDetail, activeBoardId } = defineProps(['isDetail', 'activeBoardId']);
-const emit = defineEmits(['hideSidebar'])
+const { activeBoardId } = defineProps(['activeBoardId']);
 const boards = ref([]);
 const isAddBoard = ref(false);
 const isSuccess = ref(false);
 const isFalse = ref(false);
 const isBoard = ref(false);
+import {showSidebar} from "~/store/showSidebar";
+
+const {isShowSidebar, setShowSidebar}= showSidebar();
+const hideSidebar = ref(!isShowSidebar);
 
 const { boardStore } = await useBoards();
 
 boards.value = boardStore.value;
-if (boardStore.value.length !== 0) {
-    isBoard.value = true;
-} else {
-    isBoard.value = false;
-}
+isBoard.value = boardStore.value?.length !== 0;
 
 watch(boardStore, async () => {
     const { boardStore } = await useBoards();
     boards.value = boardStore.value;
-    if (boardStore.value.length !== 0) {
-        isBoard.value = true;
-    } else {
-        isBoard.value = false;
-    }
+    isBoard.value = boardStore.value?.length !== 0;
 });
 
-function hideSidebar () {
-    emit('hideSidebar');
-};
+async function handleShowSidebar () {
+  hideSidebar.value = false;
+  await setShowSidebar(true);
+}
+async function handleHideSidebar () {
+  hideSidebar.value = true;
+  await setShowSidebar(false);
+}
 
 function handleStatus (event) {
     if (event) {
@@ -139,5 +145,34 @@ function handleStatus (event) {
         border: 2px solid #fff;
         border-radius: 10px;
     }
+}
+.sidebar {
+  height: 100%;
+  width: 16px;
+  background-color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  animation: left-2-right .3s ease-in-out;
+
+  .chevron-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin: 16px 0 0 4px;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  &:hover,
+  &:hover .chevron-right {
+    background-color: rgba(0, 0, 0, 0.4);
+
+  }
 }
 </style>
