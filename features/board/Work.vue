@@ -12,11 +12,11 @@ div
     .overflow-y-auto.card-group
         draggable(v-model='work.cards', group='cards', @change='draggableCard($event)', ghost-class='ghost', @add='addDraggableCard(workId, $event)', @remove='removeDraggableCard(workId, $event)')
             .card(v-for='(cardId, i) in work?.cards', :key='i')
-                cardVue(:work-id='workId', :index='i', :card-id='cardId', :board-id='boardId', @is-status='handleStatus($event)')
+                CardVue(:work-id='workId', :index='i', :card-id='cardId', :board-id='boardId', @is-status='handleStatus($event)')
     .d-flex.justify-center.mt-1.mb-2
         v-btn.add-card-btn.d-flex.algin-center.justify-center.pa-2.pl-2.rounded-lg(variant='text', @click='showAddCard()')
             v-icon.mr-1(icon='mdi-plus')
-            | Thêm thẻ 
+            | Thêm thẻ
     v-dialog(v-model='isAddCard', persistent='', :max-width='600')
         v-form(v-model='formAddCard', @submit.prevent='addCard')
             v-card.pa-3
@@ -36,10 +36,10 @@ div
 <script setup>
 import { workDetail, editWorkTitle, updateCard } from '~~/store/useWork';
 import { useCollection, useUser, useDelete } from '~~/composable/useFirebase';
-import { numberOfCards, addActivity } from '~~/store/useCard';
-import cardVue from '~~/features/board/card.vue';
+import { numberOfCards } from '~~/store/useCard';
+import CardVue from '~~/features/board/Card.vue';
 
-const { workId, workIndex, boardId } = defineProps(['workId', 'workIndex', 'boardId']);
+const { workId, boardId } = defineProps(['workId', 'boardId']);
 const emit = defineEmits(['isStatus', 'isDeleteStatus', 'addedDragCard', 'removedDragCard']);
 const amountOfCard = ref(null);
 const formAddCard = ref(null);
@@ -49,7 +49,6 @@ const cardTitle = ref(null);
 const work = ref(null);
 const loading = ref(false);
 const loadingProgress = ref(false);
-const indexDraggableCard = ref(null);
 const rules = [(value) => !!value || "Required!!!"];
 
 const { work: workCurr } = await workDetail(workId);

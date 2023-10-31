@@ -1,14 +1,14 @@
 <template lang="pug">
 v-form.description-form(v-model="descriptionForm", @submit.prevent="addDescription", v-click-outside="cancelDescription")
-    div.mb-4
+    div.pb-4
         MdEditor(v-model="content", language="en-US",:toolbars="toolbars", :placeholder="`${content ? '' : 'Thêm mô tả cho thẻ của bạn.'}`")
     div.float-right
-        v-btn(type="submit", color="success") Lưu 
+        v-btn(type="submit", color="success") Lưu
         v-btn.ml-2(color="error", @click="cancelDescription") Hủy
 </template>
 
 <script setup>
-import { MdEditor, config } from 'md-editor-v3';
+import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import { updatePropertyCard } from '~~/store/useCard';
 

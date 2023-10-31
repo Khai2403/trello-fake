@@ -1,26 +1,26 @@
 <template lang="pug">
 .home
-    .home__body 
+    .home__body
         .introduction
             .introduction__title
-                v-row 
-                    v-col(cols="6")
+                v-row
+                    v-col(cols="12", lg="6")
                         p.font-weight-thin.title THÔNG TIN CƠ BẢN VỀ TRELLO
-                        p.mt-1.subtitle Đỉnh cao về năng suất 
+                        p.mt-1.subtitle Đỉnh cao về năng suất
                         p.mt-2.text Đơn giản, linh hoạt và mạnh mẽ. Chỉ với bảng, danh sách và thẻ, bạn sẽ biết rõ ai đang làm gì và những việc cần làm.
             .introduction__content.mt-5
-                v-row 
-                    v-col(cols="4")
-                        v-card.pa-3.card(v-for='(optionCard, index) in optionsCard' ,@click='selectIntro(index)', :style="`border-left: ${selectedCard[index] ? '6px solid rgb(0, 199, 229);' : ''}`")
+                v-row
+                    v-col(cols="12", lg="4")
+                        v-card.pa-3.card(v-for='(optionCard, index) in optionsCard' ,@click='selectIntro(index)', :style="`border-left: ${selectedCard[index] ? '6px solid rgb(0, 199, 229);' : '6px solid transparent'}`")
                             p.font-weight-bold {{ optionCard?.title }}
                             span.text-subtitle-2 {{ optionCard?.subtitle }}
-                    v-col(cols="8")
+                    v-col(cols="12", lg="8")
                         v-window(v-model='step')
                             v-window-item(v-for='(optionImg, index) in optionsImg')
-                                div.d-flex.align-center.justify-center.w-100
+                                div.d-flex.align-center.justify-center.w-100.overflow-hidden.rounded
                                     v-img.bg-white(width="100%", :aspect-ratio="16/9", :src='optionImg',:lazy-src="optionImg", cover="", alt="Hình ảnh")
         .application.mt-4.mb-12
-            .application__title 
+            .application__title
                 p.font-weight-thin.title TRELLO TRONG THỰC TIỄN
                 p.subtitle Quy trình làm việc cho mọi dự án, bất kể nhỏ to
             .application__content.mt-2

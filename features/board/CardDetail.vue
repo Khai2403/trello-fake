@@ -102,9 +102,9 @@ v-dialog.d-flex.align-center.justify-center(v-model='loadingProgress', persisten
 </template>
 
 <script setup>
-import { getInfoByUserId } from '~~/store/useUser';
-import { cardDetail, updatePropertyCard, removeAccount, addActivity } from '~~/store/useCard';
-import { useUser } from '~~/composable/useFirebase';
+import {getInfoByUserId} from '~~/store/useUser';
+import {addActivity, cardDetail, removeAccount, updatePropertyCard} from '~~/store/useCard';
+import {useUser} from '~~/composable/useFirebase';
 import DescriptionForm from '~~/features/board/DescriptionForm.vue';
 import AddMemberCardModal from '~~/features/board/AddMemberCardModal.vue';
 import DeleteMemberCardModal from '~~/features/board/DeleteMemberCardModal.vue';
@@ -139,8 +139,7 @@ listInfoMemberPre.value = card.value.userId.map(async (memberId) => {
     return member;
 })
 listInfoMember.value = await Promise.all(listInfoMemberPre.value.map(async (promise) => {
-    const result = await promise;
-    return result;
+  return await promise;
 }));
 
 watch(cardCurr, async () => {
@@ -153,8 +152,7 @@ watch(cardCurr, async () => {
         return member;
     })
     listInfoMember.value = await Promise.all(listInfoMemberPre.value.map(async (promise) => {
-        const result = await promise;
-        return result;
+      return await promise;
     }));
     for (let i = 0; i < card.value.activityLog.length; i++) {
         menuAc.value[i] = false;
@@ -207,9 +205,6 @@ async function removeUser (removedUser) {
         emit('isStatus', false);
     }
     loadingProgress.value = false;
-};
-function closeDescriptionForm () {
-    showDescriptionForm.value = false;
 };
 function handleStatus (event) {
     if (event) {
@@ -268,9 +263,11 @@ function handleAddLabel () {
 
     .description {
         cursor: pointer;
+      background-color: rgba(224, 224, 224, 0.6 );
+      border-radius: 6px;
 
         &:hover {
-            background-color: #E0E0E0;
+            background-color: rgba(224, 224, 224, 1 );
             border-radius: 6px;
         }
     }

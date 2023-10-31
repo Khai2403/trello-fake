@@ -4,7 +4,7 @@
     .d-flex.overflow-x-auto.overflow-y-hidden
         draggable.work-list(v-model='workList', @change='draggableWork($event)', ghost-class='ghostWork', handle='.work', item-key='id')
             v-card.work.mr-5.rounded-lg(:draggable='true', v-for='(work, index) in workList', :key='work.id')
-                workVue(:work-id='work.id', :board-id='id', :work-index='index', @is-status='handleStatus($event)', @is-delete-status='handleDeletedStatus', @added-drag-card = 'handelAddDragCard', @removed-drag-card = 'handelRemoveDragCard')
+                WorkVue(:work-id='work.id', :board-id='id', @is-status='handleStatus($event)', @is-delete-status='handleDeletedStatus', @added-drag-card = 'handelAddDragCard', @removed-drag-card = 'handelRemoveDragCard')
         .mt-4.mr-5
             div(v-if='!isAddWork')
                 v-btn.add-work-btn.d-flex.align-center.rounded-lg.pa-6(min-width='300', @click='showAddWork')
@@ -38,17 +38,13 @@ import { useBoards } from '~~/store/useBoard';
 import { useWorkList } from '~~/store/useWork';
 import { addActivity } from '~~/store/useCard';
 import { useCollection, useUser } from '~~/composable/useFirebase';
-import workVue from '~~/features/board/work.vue';
+import WorkVue from '~~/features/board/Work.vue';
 import MainSidebar from "~~/features/sidebar/MainSidebar.vue";
 
 definePageMeta({
     layout: 'main',
     middleware: 'auth',
 });
-
-// useHead({
-//   title: `${}`
-// })
 
 const workList = ref([]);          //nên để là mảng
 const { id } = useRoute().params;
